@@ -213,7 +213,7 @@ export default function HomeScreen() {
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setSidebarOpen(true)} data-testid="sidebar-menu-button">
+        <TouchableOpacity onPress={() => setSidebarOpen(true)} testID="sidebar-menu-button" accessibilityLabel="Open menu">
           <Ionicons name="menu" size={28} color={COLORS.white} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -223,7 +223,7 @@ export default function HomeScreen() {
         <View style={styles.headerRight}>
           {/* Connection status dot */}
           <View style={[styles.connectionDot, { backgroundColor: isOnline ? COLORS.sageGreen : COLORS.muted }]} />
-          <TouchableOpacity onPress={() => router.push('/notifications')} data-testid="notifications-button">
+          <TouchableOpacity onPress={() => router.push('/notifications')} testID="notifications-button" accessibilityLabel="Notifications">
             <Ionicons name="notifications-outline" size={26} color={COLORS.white} />
           </TouchableOpacity>
         </View>
