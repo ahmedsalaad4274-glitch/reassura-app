@@ -117,7 +117,12 @@ const MapPin: React.FC<MapPinProps> = ({ user, x, y, onPress, delay = 0, isCurre
 
 export default function MapScreen() {
   const { users, circles, currentUser, selectedMemberForPopup, setSelectedMemberForPopup, setUsers, setCircles, setCurrentUser } = useAppStore();
-  const [selectedCircle, setSelectedCircle] = React.useState<string | null>(null);
+  const { savedPlaces, addSavedPlace, removeSavedPlace } = useAuthStore();
+  const [selectedCircle, setSelectedCircle] = useState<string | null>(null);
+  const [showSavedPlaces, setShowSavedPlaces] = useState(true);
+  const [showAddPlace, setShowAddPlace] = useState(false);
+  const [newPlaceName, setNewPlaceName] = useState('');
+  const [newPlaceType, setNewPlaceType] = useState<SavedPlace['type']>('custom');
   
   useEffect(() => {
     loadData();
