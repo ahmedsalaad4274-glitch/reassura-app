@@ -468,7 +468,7 @@ async def update_user_profile(user_id: str, profile_data: dict):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    allowed_fields = ["name", "emoji", "home_city", "ghost_mode"]
+    allowed_fields = ["name", "emoji", "home_city", "ghost_mode", "profile_picture"]
     update_data = {k: v for k, v in profile_data.items() if k in allowed_fields}
     update_data["updated_at"] = datetime.utcnow()
     
