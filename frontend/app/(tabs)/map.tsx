@@ -152,6 +152,32 @@ export default function MapScreen() {
         return circle?.member_ids.includes(u.id);
       })
     : users;
+
+  const placeTypeEmojis: Record<string, string> = {
+    home: '\u{1F3E0}',
+    work: '\u{1F4BC}',
+    gym: '\u{1F3CB}',
+    church: '\u{26EA}',
+    school: '\u{1F3EB}',
+    shopping: '\u{1F6CD}',
+    custom: '\u{1F4CD}',
+  };
+
+  const handleAddPlace = () => {
+    if (!newPlaceName.trim()) return;
+    const newPlace: SavedPlace = {
+      id: `place_${Date.now()}`,
+      name: newPlaceName.trim(),
+      type: newPlaceType,
+      emoji: placeTypeEmojis[newPlaceType],
+      x: 0.4 + Math.random() * 0.3,
+      y: 0.3 + Math.random() * 0.3,
+    };
+    addSavedPlace(newPlace);
+    setNewPlaceName('');
+    setNewPlaceType('custom');
+    setShowAddPlace(false);
+  };
   
   // Mock positions for users on map
   const pinPositions = [
