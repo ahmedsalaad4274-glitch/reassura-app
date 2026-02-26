@@ -289,6 +289,20 @@ export default function MapScreen() {
         <TouchableOpacity style={styles.controlButton}>
           <Text style={styles.controlButtonText}>3D</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.controlButton, showSavedPlaces && styles.controlButtonActive]}
+          onPress={() => setShowSavedPlaces(!showSavedPlaces)}
+          data-testid="toggle-saved-places"
+        >
+          <Ionicons name="bookmark" size={18} color={showSavedPlaces ? COLORS.warmAmber : COLORS.backgroundCard} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.controlButton}
+          onPress={() => setShowAddPlace(true)}
+          data-testid="add-saved-place-button"
+        >
+          <Ionicons name="add" size={18} color={COLORS.sageGreen} />
+        </TouchableOpacity>
       </View>
       
       {/* Members Strip */}
