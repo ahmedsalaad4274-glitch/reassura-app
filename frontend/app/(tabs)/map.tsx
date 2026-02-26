@@ -322,6 +322,59 @@ export default function MapScreen() {
         </ScrollView>
       </View>
       
+      {/* Add Place Modal */}
+      <Modal
+        visible={showAddPlace}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowAddPlace(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Add Saved Place</Text>
+              <TouchableOpacity onPress={() => setShowAddPlace(false)}>
+                <Ionicons name="close" size={24} color={COLORS.white} />
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              style={styles.modalInput}
+              value={newPlaceName}
+              onChangeText={setNewPlaceName}
+              placeholder="Place name"
+              placeholderTextColor={COLORS.muted}
+              data-testid="place-name-input"
+            />
+
+            <Text style={styles.modalLabel}>Type</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typeRow}>
+              {Object.entries(placeTypeEmojis).map(([type, emo]) => (
+                <TouchableOpacity
+                  key={type}
+                  style={[styles.typeChip, newPlaceType === type && styles.typeChipActive]}
+                  onPress={() => setNewPlaceType(type as SavedPlace['type'])}
+                >
+                  <Text style={styles.typeChipEmoji}>{emo}</Text>
+                  <Text style={[styles.typeChipText, newPlaceType === type && styles.typeChipTextActive]}>
+                    {type}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={[styles.modalSaveButton, !newPlaceName.trim() && { opacity: 0.4 }]}
+              onPress={handleAddPlace}
+              disabled={!newPlaceName.trim()}
+              data-testid="save-place-button"
+            >
+              <Text style={styles.modalSaveButtonText}>Save Place</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <ProfilePopup
         user={selectedMemberForPopup}
         visible={!!selectedMemberForPopup}
