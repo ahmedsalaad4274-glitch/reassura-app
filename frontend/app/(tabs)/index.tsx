@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import PagerView from 'react-native-pager-view';
+import { CrossPlatformPager } from '../../src/components/CrossPlatformPager';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
 import { useAppStore } from '../../src/store/appStore';
 import { userApi, circleApi, footprintApi, travelApi } from '../../src/services/api';
