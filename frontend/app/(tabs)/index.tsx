@@ -140,8 +140,7 @@ export default function HomeScreen() {
         {/* Stories Row with PagerView */}
         {circles.length > 0 && (
           <View style={styles.storiesContainer}>
-            <PagerView
-              ref={pagerRef}
+            <CrossPlatformPager
               style={styles.pager}
               initialPage={0}
               onPageSelected={handlePageChange}
