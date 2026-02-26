@@ -255,6 +255,24 @@ export default function MapScreen() {
             onPress={() => setSelectedMemberForPopup(user)}
           />
         ))}
+
+        {/* Saved Places Pins */}
+        {showSavedPlaces && savedPlaces.map((place) => (
+          <TouchableOpacity
+            key={place.id}
+            style={[
+              styles.savedPlacePin,
+              { left: place.x * width, top: place.y * (height * 0.6) + 80 },
+            ]}
+            onLongPress={() => removeSavedPlace(place.id)}
+            data-testid={`saved-place-${place.id}`}
+          >
+            <View style={styles.savedPlaceMarker}>
+              <Text style={styles.savedPlaceEmoji}>{place.emoji}</Text>
+            </View>
+            <Text style={styles.savedPlaceName}>{place.name}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
       
       {/* Map Controls */}
