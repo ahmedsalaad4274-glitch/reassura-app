@@ -15,9 +15,9 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
-import { useAuthStore } from '../../src/store/authStore';
-import { CrossPlatformPager } from '../../src/components/CrossPlatformPager';
+import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../src/constants/theme';
+import { useAuthStore } from '../src/store/authStore';
+import { CrossPlatformPager } from '../src/components/CrossPlatformPager';
 
 const { width, height } = Dimensions.get('window');
 
