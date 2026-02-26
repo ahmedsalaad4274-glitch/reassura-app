@@ -76,7 +76,7 @@ export default function TravelScreen() {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <PagerView
+      <CrossPlatformPager
         style={styles.pager}
         initialPage={0}
         onPageSelected={(e) => setPageIndex(e.nativeEvent.position)}
