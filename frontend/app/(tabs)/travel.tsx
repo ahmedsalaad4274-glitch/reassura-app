@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import PagerView from 'react-native-pager-view';
+import { CrossPlatformPager } from '../../src/components/CrossPlatformPager';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
 import { useAppStore } from '../../src/store/appStore';
 import { travelApi, userApi } from '../../src/services/api';
