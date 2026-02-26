@@ -310,13 +310,18 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus: 
+    - "Fix MongoDB ObjectId handling across ALL endpoints"
+    - "Fix duplicate circles data issue" 
+    - "Restore missing travel data for Sara"
   stuck_tasks: []
   test_all: false
-  test_priority: "completed"
+  test_priority: "critical_fix_required"
 
 agent_communication:
     - agent: "testing"
       message: "Created initial test structure for all 10 Reassura API endpoints. Ready to begin comprehensive backend testing."
     - agent: "testing"
       message: "✅ BACKEND TESTING COMPLETE: All 10 API endpoints tested successfully with 100% pass rate. All core functionality verified including user management, circles, travel tracking, emergency alerts, and notifications. Backend is fully operational."
+    - agent: "testing"
+      message: "❌ CRITICAL ISSUE FOUND: Re-tested all endpoints and found systematic _id field issue. ALL endpoints returning MongoDB _id fields in responses, violating review requirements. Profile update endpoint was successfully tested and works functionally but also has this issue."
