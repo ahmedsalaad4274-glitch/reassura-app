@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,14 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
+  TextInput,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, getStatusColor } from '../../src/constants/theme';
 import { useAppStore } from '../../src/store/appStore';
+import { useAuthStore, SavedPlace } from '../../src/store/authStore';
 import { userApi, circleApi } from '../../src/services/api';
 import { ProfilePopup } from '../../src/components/ProfilePopup';
 
