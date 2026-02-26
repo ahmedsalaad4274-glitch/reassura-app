@@ -623,6 +623,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  controlButtonActive: {
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    borderRadius: BORDER_RADIUS.sm,
+  },
   controlButtonText: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.backgroundCard,
