@@ -26,7 +26,7 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const router = useRouter();
-  const pagerRef = useRef<PagerView>(null);
+  const pagerRef = useRef<ScrollView>(null);
   
   const {
     users,
