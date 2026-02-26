@@ -151,7 +151,7 @@ export default function ProfileScreen() {
             onPress={() => isEditing ? setShowAvatarOptions(true) : null}
             data-testid="profile-avatar-button"
           >
-            {profilePicture ? (
+          {profilePicture && (profilePicture.startsWith('data:') || profilePicture.startsWith('http')) ? (
               <Image source={{ uri: profilePicture }} style={styles.avatarImage} />
             ) : (
               <View style={styles.avatar}>
