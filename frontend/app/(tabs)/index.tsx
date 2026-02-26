@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,13 +14,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CrossPlatformPager } from '../../src/components/CrossPlatformPager';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
 import { useAppStore } from '../../src/store/appStore';
+import { useAuthStore } from '../../src/store/authStore';
 import { userApi, circleApi, footprintApi, travelApi } from '../../src/services/api';
 import { StoryCircle } from '../../src/components/StoryCircle';
 import { ProfilePopup } from '../../src/components/ProfilePopup';
 import { PeaceScoreBanner } from '../../src/components/PeaceScoreBanner';
 import { FootprintCard } from '../../src/components/FootprintCard';
 import { EmergencyButton } from '../../src/components/EmergencyButton';
-import { Sidebar } from '../../src/components/Sidebar';
+import { EnhancedSidebar } from '../../src/components/EnhancedSidebar';
+import { Toast } from '../../src/components/Toast';
+import { DemoOverlay } from '../../src/components/DemoMode';
 
 const { width } = Dimensions.get('window');
 
