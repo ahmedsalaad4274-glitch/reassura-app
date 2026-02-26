@@ -107,7 +107,7 @@ user_problem_statement: "Test the Reassura API backend with comprehensive endpoi
 backend:
   - task: "Welcome endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -119,10 +119,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/ returns correct welcome message 'Reassura API - Peace of mind as a service 🌿'"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: ALL endpoints returning _id fields in responses. serialize_doc function converts ObjectId to string but doesn't remove _id field as required"
 
   - task: "Users list endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -134,10 +137,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/users returns all 5 users (You, Mum, Dad, Jamie, Sara) with correct data structure"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Returns _id fields in all user objects. Function works correctly but ObjectId handling fails requirement"
 
   - task: "Current user endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -149,10 +155,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/users/current/me returns current user 'You' with is_current_user=True"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Returns _id field in response. Core functionality works but ObjectId handling fails requirement"
 
   - task: "User status update endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -164,10 +173,28 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: PUT /api/users/user-you/status successfully updates status to 'on_the_way' with emoji '🚗' and message 'Heading out now', creates footprint"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Returns _id field in response. Update functionality works perfectly but ObjectId handling fails requirement"
+
+  - task: "User profile update endpoint"
+    implemented: true
+    working: false
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "New test - PUT /api/users/{user_id}/profile endpoint with profile_picture field needs testing"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: PUT /api/users/{user_id}/profile accepts profile_picture field and updates correctly BUT returns _id field. Endpoint works functionally but fails ObjectId handling requirement"
 
   - task: "Circles list endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -179,6 +206,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/circles returns 2 circles (Family and Friends) with correct data structure"
+        - working: false
+          agent: "testing"
+          comment: "❌ ISSUE: Now returns 3 circles (duplicate Family circle created). Also returns _id fields. Data inconsistency + ObjectId handling issue"
 
   - task: "Circle members endpoint"
     implemented: true
@@ -194,10 +224,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/circles/circle-family/members returns 4 members (You, Mum, Dad, Jamie) as expected"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASS: Still works correctly - returns expected 4 family members despite duplicate circle issue"
 
   - task: "Footprints endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -209,10 +242,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/footprints returns recent footprints with correct data structure including user updates and status changes"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Returns _id fields in all footprint objects. Functionality works but ObjectId handling fails requirement"
 
   - task: "Travel endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -224,10 +260,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/travel returns Sara's active travel with flight BA75 from London Heathrow to Lagos with correct structure and progress"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Returns 0 active travels - Sara's travel data missing. Also would return _id fields when data exists. Data + ObjectId issues"
 
   - task: "Emergency alert endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -239,10 +278,13 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: POST /api/emergency successfully creates emergency alert for user 'You' to Family circle, generates notifications for circle members"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Emergency creation works but would return _id field in response. ObjectId handling fails requirement"
 
   - task: "Notifications endpoint"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
     stuck_count: 0
     priority: "high"
@@ -254,6 +296,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PASS: GET /api/notifications returns notifications including seed data and emergency notifications with correct structure"
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL: Returns _id fields in all notification objects. Functionality works but ObjectId handling fails requirement"
 
 frontend:
   # No frontend testing required as per instruction
