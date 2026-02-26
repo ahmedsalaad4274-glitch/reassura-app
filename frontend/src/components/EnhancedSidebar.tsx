@@ -196,6 +196,22 @@ export const EnhancedSidebar: React.FC<EnhancedSidebarProps> = ({ visible, onClo
               <Text style={styles.emergencyNote}>Immediately notifies your entire circle</Text>
             </View>
             
+            {/* Sign Out */}
+            <View style={styles.signOutSection}>
+              <TouchableOpacity
+                style={styles.signOutButton}
+                onPress={() => {
+                  onClose();
+                  const { logout } = useAuthStore.getState();
+                  logout();
+                  router.replace('/onboarding');
+                }}
+              >
+                <Ionicons name="log-out-outline" size={18} color={COLORS.muted} />
+                <Text style={styles.signOutText}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
+            
             {/* Version */}
             <Text style={styles.version}>Reassura v1.0.0</Text>
           </ScrollView>
@@ -355,6 +371,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     textAlign: 'center',
     marginTop: SPACING.xs,
+  },
+  signOutSection: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+  },
+  signOutText: {
+    fontFamily: FONTS.body,
+    color: COLORS.muted,
+    fontSize: 14,
+    marginLeft: SPACING.sm,
   },
   version: {
     fontFamily: FONTS.body,
