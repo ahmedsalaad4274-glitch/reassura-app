@@ -350,7 +350,7 @@ export default function TravelScreen() {
             </TouchableOpacity>
           </ScrollView>
         </View>
-      </PagerView>
+      </CrossPlatformPager>
       
       {/* Pagination dots */}
       <View style={styles.pagination}>
