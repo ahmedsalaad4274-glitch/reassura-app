@@ -102,206 +102,95 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the Reassura API backend with comprehensive endpoint testing to verify all core functionality is working correctly"
+user_problem_statement: "Test the Reassura family safety app at https://peace-preview.preview.emergentagent.com - React Native (Expo) app running in web mode. Test Home Screen, Map Screen, Circles Screen, Travel Screen, Profile Screen, tab navigation, hamburger menu sidebar, and key UI interactions using mobile dimensions (390x844)."
 
 backend:
-  - task: "Welcome endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/ endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/ returns correct welcome message 'Reassura API - Peace of mind as a service 🌿'"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: ALL endpoints returning _id fields in responses. serialize_doc function converts ObjectId to string but doesn't remove _id field as required"
-
-  - task: "Users list endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/users endpoint needs testing for 5 users"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/users returns all 5 users (You, Mum, Dad, Jamie, Sara) with correct data structure"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Returns _id fields in all user objects. Function works correctly but ObjectId handling fails requirement"
-
-  - task: "Current user endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/users/current/me endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/users/current/me returns current user 'You' with is_current_user=True"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Returns _id field in response. Core functionality works but ObjectId handling fails requirement"
-
-  - task: "User status update endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - PUT /api/users/user-you/status endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: PUT /api/users/user-you/status successfully updates status to 'on_the_way' with emoji '🚗' and message 'Heading out now', creates footprint"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Returns _id field in response. Update functionality works perfectly but ObjectId handling fails requirement"
-
-  - task: "User profile update endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "New test - PUT /api/users/{user_id}/profile endpoint with profile_picture field needs testing"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: PUT /api/users/{user_id}/profile accepts profile_picture field and updates correctly BUT returns _id field. Endpoint works functionally but fails ObjectId handling requirement"
-
-  - task: "Circles list endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/circles endpoint needs testing for 2 circles"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/circles returns 2 circles (Family and Friends) with correct data structure"
-        - working: false
-          agent: "testing"
-          comment: "❌ ISSUE: Now returns 3 circles (duplicate Family circle created). Also returns _id fields. Data inconsistency + ObjectId handling issue"
-
-  - task: "Circle members endpoint"
-    implemented: true
-    working: true
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/circles/circle-family/members endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/circles/circle-family/members returns 4 members (You, Mum, Dad, Jamie) as expected"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: Still works correctly - returns expected 4 family members despite duplicate circle issue"
-
-  - task: "Footprints endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/footprints endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/footprints returns recent footprints with correct data structure including user updates and status changes"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Returns _id fields in all footprint objects. Functionality works but ObjectId handling fails requirement"
-
-  - task: "Travel endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/travel endpoint needs testing for Sara's travel"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/travel returns Sara's active travel with flight BA75 from London Heathrow to Lagos with correct structure and progress"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Returns 0 active travels - Sara's travel data missing. Also would return _id fields when data exists. Data + ObjectId issues"
-
-  - task: "Emergency alert endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - POST /api/emergency endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: POST /api/emergency successfully creates emergency alert for user 'You' to Family circle, generates notifications for circle members"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Emergency creation works but would return _id field in response. ObjectId handling fails requirement"
-
-  - task: "Notifications endpoint"
-    implemented: true
-    working: false
-    file: "server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial testing setup - GET /api/notifications endpoint needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASS: GET /api/notifications returns notifications including seed data and emergency notifications with correct structure"
-        - working: false
-          agent: "testing"
-          comment: "❌ CRITICAL: Returns _id fields in all notification objects. Functionality works but ObjectId handling fails requirement"
+  # Backend testing already completed - focus on frontend testing
 
 frontend:
-  # No frontend testing required as per instruction
+  - task: "Home Screen"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial setup - Need to test home screen loads with Peace Score banner, circle stories row (You, Mum, Dad, Jamie), Latest Footprints feed, SOS button, tab bar navigation"
+
+  - task: "Hamburger Menu Sidebar"
+    implemented: true
+    working: "NA"
+    file: "src/components/EnhancedSidebar.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test hamburger menu (≡) opens sidebar drawer with navigation items, Sign Out button, and Demo Mode toggle"
+
+  - task: "Map Screen"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/map.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test map loads with animated teardrop pins, search bar, circle filters, member strip, saved places (Home/Work), bookmark toggle, '+' button opens 'Add Saved Place' modal"
+
+  - task: "Circles Screen"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/circles.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test circles screen loads with circle visualizations and member emojis"
+
+  - task: "Travel Screen"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/travel.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test travel screen loads with flight tracking information"
+
+  - task: "Profile Screen"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/profile.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test profile screen with avatar, name, status, Edit Profile button, settings sections (ACCOUNT, PRIVACY, APP), Sign Out button. Test Edit Profile functionality and Change Avatar options"
+
+  - task: "Tab Navigation"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/_layout.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test all 5 tabs work: Home, Map, Circles, Travel, Profile with proper icons and labels"
 
 metadata:
   created_by: "testing_agent"
