@@ -30,6 +30,11 @@ const { width } = Dimensions.get('window');
 export default function HomeScreen() {
   const router = useRouter();
   const pagerRef = useRef<ScrollView>(null);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastVisible, setToastVisible] = useState(false);
+  const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const simulationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const updateIndexRef = useRef(0);
   
   const {
     users,
@@ -49,32 +54,110 @@ export default function HomeScreen() {
     setSidebarOpen,
     setIsLoading,
     getCircleMembers,
+    activeTravel,
+    setActiveTravel,
   } = useAppStore();
+  
+  const { isOnline, setOnline, lastRefresh, setLastRefresh, isDemoMode } = useAuthStore();
+  
+  // Status updates for simulation
+  const STATUS_UPDATES = [
+    { userId: 'user-jamie', status: 'arrived', emoji: '📍', message: 'Just arrived!', name: 'Jamie' },
+    { userId: 'user-mum', status: 'home', emoji: '🏠', message: 'Making dinner 🍳', name: 'Mum' },
+    { userId: 'user-dad', status: 'all_good', emoji: '❤️', message: 'Relaxing at home', name: 'Dad' },
+  ];
   
   useEffect(() => {
     loadData();
+    
+    // Auto-refresh every 30 seconds
+    refreshIntervalRef.current = setInterval(() => {
+      refreshData();
+    }, 30000);
+    
+    // Simulate updates every 45 seconds
+    simulationIntervalRef.current = setInterval(() => {
+      simulateUpdate();
+    }, 45000);
+    
+    return () => {
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+      if (simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
+    };
   }, []);
   
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const [usersRes, circlesRes, footprintsRes, currentUserRes] = await Promise.all([
+      const [usersRes, circlesRes, footprintsRes, currentUserRes, travelRes] = await Promise.all([
         userApi.getAll(),
         circleApi.getAll(),
         footprintApi.getAll(),
         userApi.getCurrent(),
+        travelApi.getActive(),
       ]);
       
       setUsers(usersRes.data);
       setCircles(circlesRes.data);
       setFootprints(footprintsRes.data);
       setCurrentUser(currentUserRes.data);
+      setActiveTravel(travelRes.data);
+      setOnline(true);
+      setLastRefresh(new Date());
     } catch (error) {
       console.error('Error loading data:', error);
+      setOnline(false);
     } finally {
       setIsLoading(false);
     }
   };
+  
+  const refreshData = useCallback(async () => {
+    try {
+      const [footprintsRes, usersRes] = await Promise.all([
+        footprintApi.getAll(),
+        userApi.getAll(),
+      ]);
+      setFootprints(footprintsRes.data);
+      setUsers(usersRes.data);
+      setLastRefresh(new Date());
+      setOnline(true);
+    } catch (error) {
+      setOnline(false);
+    }
+  }, []);
+  
+  const simulateUpdate = useCallback(() => {
+    const update = STATUS_UPDATES[updateIndexRef.current % STATUS_UPDATES.length];
+    updateIndexRef.current++;
+    
+    const updatedUsers = users.map(user => {
+      if (user.id === update.userId) {
+        return {
+          ...user,
+          status: update.status,
+          status_emoji: update.emoji,
+          status_message: update.message,
+          updated_at: new Date().toISOString(),
+        };
+      }
+      return user;
+    });
+    setUsers(updatedUsers);
+    
+    // Show toast
+    setToastMessage(`${update.name} ${update.emoji} ${update.status.replace('_', ' ')}`);
+    setToastVisible(true);
+    
+    // Advance Sara's flight progress
+    if (activeTravel.length > 0) {
+      const updatedTravel = activeTravel.map(t => ({
+        ...t,
+        progress: Math.min(100, t.progress + 3),
+      }));
+      setActiveTravel(updatedTravel);
+    }
+  }, [users, activeTravel]);
   
   const handlePageChange = (e: any) => {
     setSelectedCircleIndex(e.nativeEvent.position);
