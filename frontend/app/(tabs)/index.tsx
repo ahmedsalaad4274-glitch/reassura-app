@@ -179,7 +179,7 @@ export default function HomeScreen() {
                   </View>
                 );
               })}
-            </PagerView>
+            </CrossPlatformPager>
             
             {/* Pagination Dots */}
             <View style={styles.paginationDots}>
