@@ -177,6 +177,14 @@ export default function HomeScreen() {
     return current ? [current, ...others] : others;
   }, [circleMembers, currentUser]);
   
+  const formatLastRefresh = () => {
+    if (!lastRefresh) return '';
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - lastRefresh.getTime()) / 1000);
+    if (diff < 60) return 'Updated just now';
+    return `Updated ${Math.floor(diff / 60)}m ago`;
+  };
+  
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -190,7 +198,18 @@ export default function HomeScreen() {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <Sidebar visible={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <EnhancedSidebar visible={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      
+      {/* Toast notification */}
+      <Toast
+        message={toastMessage}
+        visible={toastVisible}
+        onHide={() => setToastVisible(false)}
+        type="success"
+      />
+      
+      {/* Demo mode overlay */}
+      <DemoOverlay onNavigate={(route) => router.push(route as any)} />
       
       {/* Header */}
       <View style={styles.header}>
@@ -201,10 +220,21 @@ export default function HomeScreen() {
           <Ionicons name="leaf" size={20} color={COLORS.sageGreen} />
           <Text style={styles.headerTitle}>Reassura</Text>
         </View>
-        <TouchableOpacity onPress={() => router.push('/notifications')}>
-          <Ionicons name="notifications-outline" size={26} color={COLORS.white} />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          {/* Connection status dot */}
+          <View style={[styles.connectionDot, { backgroundColor: isOnline ? COLORS.sageGreen : COLORS.muted }]} />
+          <TouchableOpacity onPress={() => router.push('/notifications')}>
+            <Ionicons name="notifications-outline" size={26} color={COLORS.white} />
+          </TouchableOpacity>
+        </View>
       </View>
+      
+      {/* Demo badge */}
+      {isDemoMode && (
+        <View style={styles.demoBadge}>
+          <Text style={styles.demoBadgeText}>DEMO</Text>
+        </View>
+      )}
       
       <ScrollView
         style={styles.scrollView}
