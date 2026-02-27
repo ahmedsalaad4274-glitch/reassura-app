@@ -442,10 +442,18 @@ async def update_user_status(user_id: str, status_update: UserStatusUpdate):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    STATUS_EMOJIS = {
+        'home': '\U0001F3E0', 'on_the_way': '\U0001F697', 'arrived': '\U0001F4CD',
+        'all_good': '\u2764\uFE0F', 'travelling': '\u2708\uFE0F', 'goodnight': '\U0001F319',
+        'safe_walk': '\U0001F6B6', 'offline': '\U0001F4A4',
+    }
+    emoji = status_update.status_emoji or STATUS_EMOJIS.get(status_update.status, '\U0001F4CD')
+    msg = status_update.status_message or status_update.message or ''
+    
     update_data = {
         "status": status_update.status,
-        "status_emoji": status_update.status_emoji,
-        "status_message": status_update.status_message,
+        "status_emoji": emoji,
+        "status_message": msg,
         "updated_at": datetime.utcnow()
     }
     
@@ -458,8 +466,8 @@ async def update_user_status(user_id: str, status_update: UserStatusUpdate):
         "user_name": user["name"],
         "user_emoji": user["emoji"],
         "status": status_update.status,
-        "status_emoji": status_update.status_emoji,
-        "message": status_update.status_message,
+        "status_emoji": emoji,
+        "message": msg,
         "created_at": datetime.utcnow()
     }
     await db.footprints.insert_one(footprint)
