@@ -533,6 +533,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.backgroundDark },
   scrollView: { flex: 1 },
   scrollContent: { paddingBottom: 120 },
+  profileCard: {
     alignItems: 'center',
     padding: SPACING.xl,
     paddingTop: SPACING.lg,
