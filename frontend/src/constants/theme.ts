@@ -13,6 +13,7 @@ export const COLORS = {
   cream: '#F7F3EE',
   terracotta: '#C4694F',
   gold: '#C9A84C',
+  warmAmber: '#C9A84C',
   navyBlue: '#3D5A99',
 
   // Neutral
