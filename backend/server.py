@@ -62,8 +62,9 @@ class UserCreate(BaseModel):
 
 class UserStatusUpdate(BaseModel):
     status: str
-    status_emoji: str
+    status_emoji: Optional[str] = None
     status_message: Optional[str] = None
+    message: Optional[str] = None
 
 class Circle(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
