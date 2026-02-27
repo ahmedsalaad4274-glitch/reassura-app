@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Image } from 'react-native';
 import { COLORS, FONTS, getStatusColor } from '../constants/theme';
 import { User } from '../store/appStore';
 
@@ -18,6 +18,7 @@ export const StoryCircle: React.FC<StoryCircleProps> = ({
 }) => {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const statusColor = getStatusColor(user.status);
+  const mood = (user as any).mood;
   
   React.useEffect(() => {
     const pulse = Animated.loop(
@@ -69,13 +70,27 @@ export const StoryCircle: React.FC<StoryCircleProps> = ({
       
       {isCurrentUser && (
         <View style={styles.addBadge}>
-          <Text style={styles.addBadgeText}>＋</Text>
+          <Text style={styles.addBadgeText}>+</Text>
         </View>
       )}
       
-      {user.battery_level && user.battery_level < 20 && (
+      {/* Mood badge */}
+      {mood && (
+        <View style={styles.moodBadge}>
+          <Text style={styles.moodText}>{mood}</Text>
+        </View>
+      )}
+      
+      {user.battery_level && user.battery_level < 20 && !mood && (
         <View style={styles.batteryBadge}>
-          <Text style={styles.batteryText}>🔋</Text>
+          <Text style={styles.batteryText}>{'\u{1F50B}'}</Text>
+        </View>
+      )}
+      
+      {/* Quiet hours indicator */}
+      {(user as any).quiet_hours_enabled && (
+        <View style={styles.quietBadge}>
+          <Text style={styles.quietText}>{'\u{1F4A4}'}</Text>
         </View>
       )}
       
@@ -127,6 +142,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  moodBadge: {
+    position: 'absolute',
+    top: -2,
+    right: 2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.backgroundDark,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.backgroundCard,
+  },
+  moodText: {
+    fontSize: 11,
+  },
   batteryBadge: {
     position: 'absolute',
     top: 0,
@@ -134,6 +165,20 @@ const styles = StyleSheet.create({
   },
   batteryText: {
     fontSize: 12,
+  },
+  quietBadge: {
+    position: 'absolute',
+    top: -2,
+    left: 2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: COLORS.backgroundDark,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quietText: {
+    fontSize: 10,
   },
   name: {
     fontFamily: FONTS.bodyMedium,
