@@ -668,9 +668,10 @@ const styles = StyleSheet.create({
   saveBtnText: { fontFamily: FONTS.bodyBold, fontSize: 16, color: COLORS.white },
   // Settings sections
   section: {
-    marginHorizontal: SPACING.lg, marginBottom: SPACING.md,
-    backgroundColor: COLORS.backgroundCard, borderRadius: BORDER_RADIUS.lg,
-    overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+    marginHorizontal: SPACING.lg, marginBottom: 12,
+    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 16,
+    overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
   },
   sectionTitle: {
     fontFamily: FONTS.bodyBold, fontSize: 11, color: COLORS.muted,
