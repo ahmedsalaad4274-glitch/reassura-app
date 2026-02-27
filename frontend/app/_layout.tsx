@@ -79,6 +79,20 @@ export default function RootLayout() {
             animation: 'slide_from_bottom',
           }}
         />
+        <Stack.Screen
+          name="night-check"
+          options={{
+            presentation: 'modal',
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="safe-walk"
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );
