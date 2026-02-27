@@ -4,107 +4,74 @@
 Reassura is a private, invite-only peace-of-mind and family safety app. Users voluntarily share their status with trusted circles. Built on trust and privacy, not surveillance.
 
 ## Tech Stack
-- **Frontend**: React Native (Expo, TypeScript), Expo Router (file-based navigation), Zustand (state management)
-- **Backend**: FastAPI (Python), MongoDB (NoSQL)
-- **UI/UX**: Dark mode, gesture-driven navigation, custom animations, "warm, dark, organic" aesthetic
+- **Frontend**: React Native (Expo, TypeScript), Expo Router, Zustand
+- **Backend**: FastAPI (Python), MongoDB
 
-## Core Screens
-1. **Home**: Peace Score, swipeable Circle switcher, Stories row, Latest Footprints feed, floating SOS button
-2. **Map**: 3D-styled dark map, custom teardrop pins with status colors, Saved Places with amber markers
-3. **Circles**: Visual circle representation with pulsating animations and member emojis
-4. **Travel**: Multi-page view with flight tracking, night sky map, travel profile
-5. **Profile**: Avatar/photo management, privacy settings, account management, Sign Out
-6. **Onboarding**: Splash → Carousel → Signup → OTP → Profile Setup
+## Implemented Features
 
-## Implemented Features (Feb 26, 2026)
-
-### P0 - Core Features (All Complete)
-- [x] Full tab navigation (5 screens)
-- [x] Home screen with Peace Score, Stories row, Footprints feed
-- [x] Map screen with animated teardrop pins, 3D map visuals
-- [x] Circles screen with orbital member animations
-- [x] Travel screen with flight tracking
-- [x] Profile screen with settings management
-- [x] Backend API with all endpoints (users, circles, footprints, travel, emergency)
+### Phase 1 - MVP (Feb 26)
+- [x] 5 tab screens: Home, Map, Circles, Travel, Profile
+- [x] Backend API with all core endpoints
 - [x] MongoDB with seeded mock data
+- [x] Custom CrossPlatformPager for swipe gestures
 
-### P0 - 7 Feature Update (All Complete)
-1. [x] **Authentication/Onboarding Flow** - Multi-step onboarding (splash, carousel, signup, OTP, profile setup), conditional routing in root layout
-2. [x] **Sidebar Drawer Navigation** - Slide-out menu with navigation items, settings toggles, Ghost Mode, Demo Mode trigger, Sign Out, Emergency Alert
-3. [x] **Profile Picture Upload** - expo-image-picker for mobile + HTML file input web fallback, avatar options (Upload Photo / Choose Emoji / Remove)
-4. [x] **Guided Demo Mode** - Interactive walkthrough overlay with step-by-step guidance
-5. [x] **Enhanced Map Pins & Animations** - Animated bounce-in, pulse for travelling users, status-colored teardrop pins, travel/battery badges
-6. [x] **Saved Places on Map** - Home/Work default markers, toggle visibility, Add Place modal with type selection, long-press to remove
-7. [x] **Simulated Real-Time Updates** - Auto-refresh (30s), simulated status changes (45s), toast notifications, flight progress advancement
+### Phase 2 - 7 Feature Update (Feb 26)
+- [x] Authentication/Onboarding Flow
+- [x] Sidebar Drawer Navigation
+- [x] Profile Picture Upload (expo-image-picker + web fallback)
+- [x] Demo Mode overlay
+- [x] Enhanced Map Pins & Animations
+- [x] Saved Places on Map
+- [x] Simulated Real-Time Updates
+
+### Phase 3 - Design & Feature Enhancement (Feb 27)
+- [x] **Home screen redesign** — Card-based layout matching profile screen style
+- [x] **Draggable SOS button** — PanResponder-based drag, AsyncStorage position persistence, screen bounds clamping
+- [x] **My Places editor** — Interactive mini-map in profile edit, color-coded place types (Home/Work/Gym/Church/Custom), add/delete places
+- [x] **Sidebar Get Started card** — Progress checklist (6 items), sage green progress bar, tappable items, auto-hide when complete
+- [x] **Check-in Request** — Gentle nudge modal with quick responses ("All good", "Be home soon", "At work"), footprint integration
+- [x] **Circle Mood** — Mood emoji selector (Good/Tired/Stressed/Unwell/Great/Grateful), mood badge on story circles, optional
+- [x] **Quiet Hours** — Toggle in privacy settings, time range config (start/end), purple moon icon, status shows as "Quiet hours" to circle
 
 ## API Endpoints
-- GET /api/ - Health check
-- GET /api/users - List all users
-- GET /api/users/current/me - Current user
-- PUT /api/users/{id}/profile - Update profile (name, emoji, home_city, ghost_mode, profile_picture)
-- POST /api/users/{id}/status - Update status
-- GET /api/circles - List circles
-- GET /api/circles/{id}/members - Circle members
-- GET /api/footprints - Activity feed
-- GET /api/travel - Travel sessions
-- POST /api/emergency - Emergency alert
-- GET /api/notifications - Notifications
+- GET /api/ — Health check
+- GET /api/users — List all users
+- GET /api/users/current/me — Current user
+- PUT /api/users/{id}/profile — Update profile (name, emoji, home_city, ghost_mode, profile_picture, mood, quiet_hours_enabled/start/end)
+- POST /api/users/{id}/status — Update status
+- GET /api/circles — List circles
+- POST /api/checkin/request — Send check-in request
+- POST /api/checkin/respond — Respond to check-in
+- GET /api/footprints — Activity feed
+- GET /api/travel — Travel sessions
+- POST /api/emergency — Emergency alert
+- GET /api/notifications — Notifications
 
 ## DB Schema
-- **users**: {id, name, emoji, circle_ids, status, status_emoji, status_message, home_city, ghost_mode, profile_picture, battery_level, updated_at}
+- **users**: {id, name, emoji, circle_ids, status, status_emoji, status_message, home_city, ghost_mode, profile_picture, mood, quiet_hours_enabled, quiet_hours_start, quiet_hours_end, battery_level, updated_at}
 - **circles**: {id, name, emoji, member_ids}
-- **footprints**: {id, user_id, type, status, message, timestamp}
+- **footprints**: {id, user_id, user_name, user_emoji, status, status_emoji, message, created_at}
 - **travel_sessions**: {id, user_id, flight_number, origin, destination, status, progress}
-- **notifications**: {id, type, title, message, timestamp, read}
+- **notifications**: {id, user_id, type, title, message, related_user_id, read, created_at}
 
 ## Architecture
 ```
-/app
-├── backend/
-│   ├── server.py          # FastAPI app, all endpoints, MongoDB models
-│   └── requirements.txt
-├── frontend/
-│   ├── app/
-│   │   ├── _layout.tsx    # Root layout with auth routing
-│   │   ├── onboarding.tsx # Multi-step onboarding flow
-│   │   ├── (tabs)/
-│   │   │   ├── _layout.tsx    # Tab navigator
-│   │   │   ├── index.tsx      # Home screen
-│   │   │   ├── map.tsx        # Map with pins & saved places
-│   │   │   ├── circles.tsx    # Circle visualizations
-│   │   │   ├── travel.tsx     # Flight tracking
-│   │   │   └── profile.tsx    # Profile with image upload
-│   │   ├── update-status.tsx  # Status update modal
-│   │   ├── notifications.tsx  # Notifications screen
-│   │   └── pricing.tsx        # Subscription plans
-│   └── src/
-│       ├── components/
-│       │   ├── CrossPlatformPager.tsx  # Custom swipeable view
-│       │   ├── EnhancedSidebar.tsx     # Drawer navigation
-│       │   ├── DemoMode.tsx            # Demo guide overlay
-│       │   ├── Toast.tsx               # Notification toasts
-│       │   ├── StoryCircle.tsx         # Status story circles
-│       │   ├── PeaceScoreBanner.tsx    # Peace score widget
-│       │   ├── FootprintCard.tsx       # Activity feed cards
-│       │   ├── EmergencyButton.tsx     # SOS button
-│       │   └── ProfilePopup.tsx        # Member profile popup
-│       ├── services/api.ts             # API service layer
-│       ├── store/
-│       │   ├── appStore.ts             # App state (users, circles, etc.)
-│       │   └── authStore.ts            # Auth state, saved places
-│       └── constants/theme.ts          # Colors, fonts, spacing
+/app/backend/server.py          — FastAPI app, all endpoints
+/app/frontend/app/_layout.tsx   — Root layout with auth routing
+/app/frontend/app/onboarding.tsx — Multi-step onboarding
+/app/frontend/app/(tabs)/       — 5 tab screens
+/app/frontend/src/components/   — Reusable components
+/app/frontend/src/store/        — Zustand stores (appStore, authStore)
+/app/frontend/src/services/     — API service layer
+/app/frontend/src/constants/    — Theme (colors, fonts, spacing)
 ```
 
-## Known Issues
-- Shadow style deprecation warnings (cosmetic, use boxShadow instead)
-- All data is MOCKED - uses seeded backend data and simulated real-time updates
-
 ## Future Backlog
-- P1: Real authentication with backend (JWT/OAuth)
+- P1: Real authentication (JWT/OAuth)
 - P1: Real-time push notifications
 - P2: Actual map integration (MapBox/Google Maps)
 - P2: Real GPS location tracking (opt-in)
-- P2: Real flight tracking API integration
-- P3: Circle invite system
-- P3: Check-in requests between members
+- P2: Real flight tracking API
+- P3: Circle invite system with codes
 - P3: Driving mode detection
+- P3: Place-based auto-status detection (geofencing)
