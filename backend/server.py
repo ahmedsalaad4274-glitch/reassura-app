@@ -49,6 +49,10 @@ class User(BaseModel):
     speed_mph: Optional[int] = None
     ghost_mode: bool = False
     is_current_user: bool = False
+    mood: Optional[str] = None  # emoji mood: 😊 😴 😰 🤒 😄 🙏
+    quiet_hours_enabled: bool = False
+    quiet_hours_start: Optional[str] = None  # "23:00"
+    quiet_hours_end: Optional[str] = None  # "07:00"
 
 class UserCreate(BaseModel):
     name: str
@@ -468,7 +472,7 @@ async def update_user_profile(user_id: str, profile_data: dict):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    allowed_fields = ["name", "emoji", "home_city", "ghost_mode", "profile_picture"]
+    allowed_fields = ["name", "emoji", "home_city", "ghost_mode", "profile_picture", "mood", "quiet_hours_enabled", "quiet_hours_start", "quiet_hours_end"]
     update_data = {k: v for k, v in profile_data.items() if k in allowed_fields}
     update_data["updated_at"] = datetime.utcnow()
     
