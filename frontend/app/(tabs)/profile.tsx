@@ -534,9 +534,7 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { paddingBottom: 120 },
   profileCard: {
-    alignItems: 'center',
-    padding: SPACING.xl,
-    paddingTop: SPACING.lg,
+    alignItems: 'center', padding: SPACING.xl, paddingTop: SPACING.lg,
   },
   avatarRing: {
     width: 96, height: 96, borderRadius: 48, borderWidth: 3,
