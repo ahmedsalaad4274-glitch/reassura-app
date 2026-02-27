@@ -490,6 +490,16 @@ export default function ProfileScreen() {
             </View>
             <Ionicons name="chevron-forward" size={20} color={COLORS.muted} />
           </View>
+          <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/night-check')}>
+            <View style={styles.settingLeft}>
+              <Ionicons name="moon" size={20} color={COLORS.gold} />
+              <View style={styles.settingInfo}>
+                <Text style={styles.settingLabel}>Night Check</Text>
+                <Text style={styles.settingValue}>Nightly safety ritual for your circle</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={COLORS.muted} />
+          </TouchableOpacity>
         </View>
 
         {/* App Section */}
