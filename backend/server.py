@@ -777,7 +777,7 @@ async def respond_to_checkin(from_user_id: str, to_user_id: str, response_messag
         "user_name": from_user["name"],
         "user_emoji": from_user["emoji"],
         "status": "check_in_response",
-        "status_emoji": "\u{1f49a}",
+        "status_emoji": "\U0001f49a",
         "message": f"Reassured {to_user['name']}: {response_message}",
         "created_at": datetime.utcnow()
     }
