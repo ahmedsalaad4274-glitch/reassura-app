@@ -694,7 +694,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: 'rgba(26,22,18,0.95)',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: SPACING.xl,
