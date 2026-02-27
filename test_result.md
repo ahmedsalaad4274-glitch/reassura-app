@@ -219,11 +219,90 @@ metadata:
   test_sequence: 1
   run_ui: true
 
+frontend:
+  - task: "Premium Home Screen UI"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test premium glassmorphism card design (transparent backgrounds, NOT solid brown/opaque), Peace Score card with 'All safe' and streak badge (fire emoji + '12 day streak'), 'I'm Safe' button (large sage green pill), Quick Actions pills (Night Check, Safe Walk, Check In), section headers with sage green accent bars"
+
+  - task: "Night Check Premium Feature"
+    implemented: true
+    working: "NA"
+    file: "app/night-check.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test Night Check screen: dark background with star particles, large moon emoji, 'Goodnight, You' title, 'Send Goodnight' button in gold/amber, success message 'Sweet dreams. Your circle knows you're safe'"
+
+  - task: "Safe Walk Premium Feature"
+    implemented: true
+    working: "NA"
+    file: "app/safe-walk.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test Safe Walk: destination input, time selection chips (10/15/20/30 min), circle members list, 'Start Safe Walk' sage green button, active state with walking emoji and progress bar, 'I've Arrived Safely' button with success message"
+
+  - task: "Premium Sidebar Design"
+    implemented: true
+    working: "NA"
+    file: "src/components/EnhancedSidebar.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test glassmorphism sidebar (dark semi-transparent), 'Get Started' card with progress bar and checklist, 'Start Safe Walk' button in sidebar, navigation items with sage green left-bar accent for active item"
+
+  - task: "Profile Premium Features"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/profile.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test mood selector with options (Good, Tired, Stressed, Unwell, Great, Grateful, Clear), Privacy section toggles (Ghost Mode, Battery Sharing, Quiet Hours with time inputs), 'MY PLACES' section in Edit Profile"
+
+  - task: "Quick Check In Feature"
+    implemented: true
+    working: "NA"
+    file: "app/(tabs)/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test 'Check In' quick action pill shows toast notification: 'All good — your circle knows'"
+
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Premium Home Screen UI"
+    - "Night Check Premium Feature"
+    - "Safe Walk Premium Feature"
+    - "Premium Sidebar Design"
+    - "Profile Premium Features"
+    - "Quick Check In Feature"
   stuck_tasks: []
-  test_all: true
-  test_priority: "completed"
+  test_all: false
+  test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
@@ -232,3 +311,5 @@ agent_communication:
       message: "TESTING COMPLETED SUCCESSFULLY: All 7 major frontend tasks tested and working perfectly. The Reassura family safety app is fully functional with excellent mobile responsiveness. Home screen displays Peace Score banner, circle stories, and footprints feed. All 5 tabs navigate properly. Hamburger menu sidebar works with full navigation. Map screen shows interactive map with teardrop pins, saved places, and controls. Profile and other screens load correctly. Sign out redirects to onboarding. Real-time updates and animations functioning. No critical issues found - app ready for production use."
     - agent: "testing" 
       message: "COMPREHENSIVE FEATURE TESTING COMPLETED: Conducted detailed testing of advanced features as requested in test plan. Home Screen Design Consistency ✓ - Card layout with YOUR CIRCLE and LATEST FOOTPRINTS sections working perfectly, Peace Score banner displays correctly, circle stories (You_updated, Mum, Dad, Jamie) render properly. Tab Navigation ✓ - All 5 tabs (Home, Map, Circles, Travel, Profile) functional. Profile Features ✓ - Mood selector, places editor with MY PLACES section, and settings sections accessible. SOS Button ✓ - Emergency button present in code (EmergencyButton component with drag functionality). Sidebar Menu ✓ - Hamburger menu opens sidebar with Get Started card, progress tracking, and navigation. App demonstrates excellent mobile responsiveness (390x844) with warm dark theme and rounded card containers as designed. All major user flows operational."
+    - agent: "testing"
+      message: "PREMIUM FEATURES TESTING INITIATED: Updated test plan to focus on specific premium features requested: glassmorphism UI design, Peace Score with streak badge, I'm Safe button interactions, Night Check and Safe Walk premium screens, premium sidebar design, profile mood selector, and quick check-in functionality. Ready to test these advanced premium features."
