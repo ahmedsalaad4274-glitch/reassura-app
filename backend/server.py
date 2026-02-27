@@ -748,6 +748,43 @@ async def send_checkin_request(from_user_id: str, to_user_id: str):
     
     return checkin.dict()
 
+@api_router.post("/checkin/respond")
+async def respond_to_checkin(from_user_id: str, to_user_id: str, response_message: str = "All good"):
+    """User responds to a check-in request"""
+    from_user = await db.users.find_one({"id": from_user_id})
+    to_user = await db.users.find_one({"id": to_user_id})
+    
+    if not from_user or not to_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Create notification for the requester
+    notification = {
+        "id": str(uuid.uuid4()),
+        "user_id": to_user_id,
+        "type": "check_in_response",
+        "title": f"{from_user['name']} responded to your check-in",
+        "message": response_message,
+        "related_user_id": from_user_id,
+        "read": False,
+        "created_at": datetime.utcnow()
+    }
+    await db.notifications.insert_one(notification)
+    
+    # Create footprint
+    footprint = {
+        "id": str(uuid.uuid4()),
+        "user_id": from_user_id,
+        "user_name": from_user["name"],
+        "user_emoji": from_user["emoji"],
+        "status": "check_in_response",
+        "status_emoji": "\u{1f49a}",
+        "message": f"Reassured {to_user['name']}: {response_message}",
+        "created_at": datetime.utcnow()
+    }
+    await db.footprints.insert_one(footprint)
+    
+    return {"success": True, "message": f"{from_user['name']} reassured {to_user['name']}"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
