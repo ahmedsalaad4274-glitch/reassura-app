@@ -507,7 +507,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/pricing')}>
             <View style={styles.settingLeft}>
-              <Ionicons name="diamond-outline" size={20} color={COLORS.warmAmber} />
+              <Ionicons name="diamond-outline" size={20} color={COLORS.gold} />
               <View style={styles.settingInfo}>
                 <Text style={styles.settingLabel}>Subscription</Text>
                 <Text style={styles.settingValue}>Free plan</Text>
