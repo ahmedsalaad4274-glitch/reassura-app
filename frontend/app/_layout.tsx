@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
   Fraunces_400Regular,
+  Fraunces_400Regular_Italic,
+  Fraunces_600SemiBold,
   Fraunces_700Bold,
 } from '@expo-google-fonts/fraunces';
 import {

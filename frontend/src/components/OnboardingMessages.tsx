@@ -4,7 +4,7 @@ import { ONBOARDING } from '../styles/onboarding';
 
 interface Segment { text: string; bright?: boolean }
 
-const MESSAGES: { emoji: string; segments: Segment[]; bg: string; border: string }[] = [
+const MESSAGES: { emoji: string; segments: Segment[]; shadowColor: string; bg: string; border: string }[] = [
   {
     emoji: '\ud83c\udf3f',
     segments: [
@@ -16,8 +16,9 @@ const MESSAGES: { emoji: string; segments: Segment[]; bg: string; border: string
       { text: 'auto-deletes after 24 hours', bright: true },
       { text: '.' },
     ],
-    bg: 'rgba(122,158,135,0.09)',
-    border: 'rgba(122,158,135,0.18)',
+    bg: 'rgba(122,158,135,0.08)',
+    border: 'rgba(122,158,135,0.22)',
+    shadowColor: '#7A9E87',
   },
   {
     emoji: '\ud83c\udfe1',
@@ -27,8 +28,9 @@ const MESSAGES: { emoji: string; segments: Segment[]; bg: string; border: string
       { text: 'Everyone you love', bright: true },
       { text: ' \u2014 kept safe.' },
     ],
-    bg: 'rgba(122,158,135,0.09)',
-    border: 'rgba(122,158,135,0.18)',
+    bg: 'rgba(122,158,135,0.08)',
+    border: 'rgba(122,158,135,0.22)',
+    shadowColor: '#7A9E87',
   },
   {
     emoji: '\ud83d\udc9a',
@@ -39,13 +41,18 @@ const MESSAGES: { emoji: string; segments: Segment[]; bg: string; border: string
       { text: 'Reassura', bright: true },
       { text: ' so you don\u2019t have to.' },
     ],
-    bg: 'rgba(61,90,153,0.09)',
-    border: 'rgba(61,90,153,0.18)',
+    bg: 'rgba(61,90,153,0.08)',
+    border: 'rgba(61,90,153,0.22)',
+    shadowColor: '#3D5A99',
   },
 ];
 
-export const OnboardingMessages: React.FC = () => {
-  const [index, setIndex] = useState(0);
+interface Props {
+  startIndex?: number;
+}
+
+export const OnboardingMessages: React.FC<Props> = ({ startIndex = 0 }) => {
+  const [index, setIndex] = useState(startIndex % MESSAGES.length);
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(12)).current;
 
@@ -53,7 +60,6 @@ export const OnboardingMessages: React.FC = () => {
     let mounted = true;
     const cycle = () => {
       if (!mounted) return;
-      // Fade in from below
       opacity.setValue(0);
       translateY.setValue(12);
       Animated.parallel([
@@ -61,16 +67,13 @@ export const OnboardingMessages: React.FC = () => {
         Animated.timing(translateY, { toValue: 0, duration: 600, useNativeDriver: true }),
       ]).start(() => {
         if (!mounted) return;
-        // Hold
         setTimeout(() => {
           if (!mounted) return;
-          // Fade out upward
           Animated.parallel([
             Animated.timing(opacity, { toValue: 0, duration: 600, useNativeDriver: true }),
             Animated.timing(translateY, { toValue: -6, duration: 600, useNativeDriver: true }),
           ]).start(() => {
             if (!mounted) return;
-            // Next message after pause
             setTimeout(() => {
               if (!mounted) return;
               setIndex(prev => (prev + 1) % MESSAGES.length);
@@ -87,7 +90,16 @@ export const OnboardingMessages: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.bubble, { backgroundColor: msg.bg, borderColor: msg.border, opacity, transform: [{ translateY }] }]}>
+      <Animated.View style={[
+        styles.bubble,
+        {
+          backgroundColor: msg.bg,
+          borderColor: msg.border,
+          shadowColor: msg.shadowColor,
+          opacity,
+          transform: [{ translateY }],
+        },
+      ]}>
         <Text style={styles.msgText}>
           {msg.emoji}{' '}
           {msg.segments.map((s, i) => (
@@ -103,7 +115,16 @@ export const OnboardingMessages: React.FC = () => {
         ))}
       </View>
 
-      <Text style={styles.signature}>{'\ud83c\udf3f'} REASSURA</Text>
+      {/* Signature with horizontal rules */}
+      <View style={styles.signatureRow}>
+        <View style={styles.ruleLine} />
+        <View style={styles.signatureCenter}>
+          <Text style={{ fontSize: 13 }}>{'\ud83c\udf3f'}</Text>
+          <Text style={styles.signatureName}>Reassura</Text>
+          <Text style={styles.signatureTagline}>your circle {'\u00B7'} your space</Text>
+        </View>
+        <View style={styles.ruleLine} />
+      </View>
     </View>
   );
 };
@@ -113,18 +134,60 @@ const styles = StyleSheet.create({
   bubble: {
     borderWidth: 1,
     borderTopLeftRadius: 4,
-    borderTopRightRadius: 14,
-    borderBottomLeftRadius: 14,
-    borderBottomRightRadius: 14,
-    paddingVertical: 11,
-    paddingHorizontal: 13,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    padding: 12,
+    paddingHorizontal: 14,
     maxWidth: '92%',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  msgText: { fontFamily: ONBOARDING.body, fontSize: 12, lineHeight: 18 },
-  bright: { color: 'rgba(255,255,255,0.85)' },
-  dim: { color: 'rgba(255,255,255,0.6)' },
+  msgText: {
+    fontFamily: 'Fraunces_400Regular_Italic',
+    fontSize: 12,
+    lineHeight: 18,
+    color: 'rgba(255,255,255,0.62)',
+  },
+  bright: {
+    fontFamily: 'Fraunces_600SemiBold',
+    color: 'rgba(255,255,255,0.92)',
+    fontStyle: 'normal',
+  },
+  dim: { color: 'rgba(255,255,255,0.62)' },
   dots: { flexDirection: 'row', gap: 5, alignItems: 'center' },
   dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: 'rgba(255,255,255,0.15)' },
   dotActive: { width: 14, height: 5, borderRadius: 2.5, backgroundColor: '#7A9E87' },
-  signature: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 1.5, fontFamily: ONBOARDING.bodyMed },
+  signatureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    width: '100%',
+  },
+  ruleLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  signatureCenter: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 3,
+  },
+  signatureName: {
+    fontFamily: 'Fraunces_400Regular',
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.38)',
+    letterSpacing: 2,
+  },
+  signatureTagline: {
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.2)',
+    fontStyle: 'italic',
+    letterSpacing: 0.5,
+  },
 });
