@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Share } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
 import { OnboardingMessages } from '../../src/components/OnboardingMessages';
+import { useOnboardingStore } from '../../src/store/onboardingStore';
 
 const INVITE_CODE = 'RIN\u00B72026';
 const INVITE_MSG = 'I\u2019m using Reassura to stay connected with my circle \ud83c\udf3f\n\nJoin using my code: RIN\u00B72026\nDownload: reassura.app';
