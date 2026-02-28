@@ -59,10 +59,10 @@ export const onboardingStyles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: ONBOARDING.body,
-    fontSize: 10,
+    fontSize: 13,
     color: ONBOARDING.muted,
     marginBottom: 16,
-    lineHeight: 15,
+    lineHeight: 19,
   },
   btnPrimary: {
     borderRadius: 13,
@@ -83,7 +83,7 @@ export const onboardingStyles = StyleSheet.create({
   btnGhostText: {
     fontFamily: ONBOARDING.body,
     textAlign: 'center' as const,
-    fontSize: 10,
+    fontSize: 12,
     color: 'rgba(255,255,255,0.35)',
   },
 });
