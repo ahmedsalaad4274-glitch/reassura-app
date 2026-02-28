@@ -33,10 +33,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     loadFromStorage();
+  }, []);
+
+  // Re-check onboarding flag whenever segments change (e.g. after completing onboarding)
+  useEffect(() => {
     AsyncStorage.getItem('reassura_onboarding_complete').then((val) => {
       setOnboardingDone(val === 'true');
     });
-  }, []);
+  }, [segments]);
 
   useEffect(() => {
     if (onboardingDone === null || !fontsLoaded) return;
