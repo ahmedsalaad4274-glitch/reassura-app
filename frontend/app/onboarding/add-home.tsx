@@ -72,13 +72,16 @@ export default function AddHomeScreen() {
           {/* Neighbourhood ring */}
           <View style={styles.neighbourhoodRing} />
 
-          {/* Pin — fixed at centre */}
+          {/* Pin — fixed at centre, pointing DOWN */}
           <View style={styles.pinContainer}>
-            <LinearGradient colors={['#3D6B50', '#7A9E87']} style={styles.teardrop}>
-              <View style={styles.pinFace}>
-                <Text style={styles.pinEmoji}>{'\ud83c\udfe0'}</Text>
-              </View>
-            </LinearGradient>
+            <View style={styles.pinOuter}>
+              <LinearGradient colors={['#3D6B50', '#7A9E87']} style={styles.teardrop}>
+                <View style={styles.pinFace}>
+                  <Text style={styles.pinEmoji}>{'\ud83c\udfe0'}</Text>
+                </View>
+              </LinearGradient>
+              <View style={styles.pinPoint} />
+            </View>
             <View style={styles.pinShadow} />
           </View>
         </View>
