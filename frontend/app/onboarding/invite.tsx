@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
   codeHint: {
     fontFamily: ONBOARDING.body,
-    fontSize: 9,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.4)',
     marginTop: 6,
   },
@@ -168,9 +168,9 @@ const styles = StyleSheet.create({
   consentText: {
     flex: 1,
     fontFamily: ONBOARDING.body,
-    fontSize: 9,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.4)',
-    lineHeight: 14,
+    lineHeight: 17,
   },
   methodGrid: {
     flexDirection: 'row',
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   methodEmoji: { fontSize: 18 },
-  methodLabel: { fontFamily: ONBOARDING.bodyMed, fontSize: 10, color: 'rgba(255,255,255,0.55)' },
+  methodLabel: { fontFamily: ONBOARDING.bodyMed, fontSize: 12, color: 'rgba(255,255,255,0.55)' },
   qrBox: {
     alignItems: 'center',
     marginBottom: 16,
@@ -210,5 +210,5 @@ const styles = StyleSheet.create({
   },
   qrHint: { fontSize: 8, color: '#666', marginTop: 6 },
   doneBtn: { alignItems: 'center', paddingVertical: 10 },
-  doneText: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.sage, fontSize: 11 },
+  doneText: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.sage, fontSize: 13 },
 });
