@@ -110,19 +110,20 @@ export default function PermissionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  hero: { fontSize: 32, textAlign: 'center', marginBottom: 10 },
+  hero: { fontSize: 40, textAlign: 'center', marginBottom: 10 },
   permCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     borderRadius: 13,
     borderWidth: 1.5,
-    padding: 13,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
     marginBottom: 8,
     gap: 11,
   },
-  permIcon: { fontSize: 20, marginTop: 1 },
+  permIcon: { fontSize: 22, marginTop: 1 },
   permName: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13, marginBottom: 3 },
-  permDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.65)', fontSize: 12, lineHeight: 17 },
+  permDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.55)', fontSize: 12, lineHeight: 18 },
   promiseBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -133,15 +134,15 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10,
     marginTop: 6,
-    marginBottom: 12,
+    marginBottom: 4,
   },
   promiseIcon: { fontSize: 14, marginTop: 1 },
   promiseText: {
     flex: 1,
     fontFamily: ONBOARDING.body,
     fontSize: 12,
-    color: 'rgba(255,255,255,0.60)',
+    color: 'rgba(255,255,255,0.45)',
     fontStyle: 'italic',
-    lineHeight: 17,
+    lineHeight: 18,
   },
 });
