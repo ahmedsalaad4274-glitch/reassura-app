@@ -250,19 +250,23 @@ export default function HomeScreen() {
 
   const renderQuickActions = () => (
     <View style={s.qaRow}>
-      <TouchableOpacity style={s.qaSafe} onPress={() => router.push('/safe-walk')}>
+      <TouchableOpacity style={s.qaSafe} onPress={() => router.push('/safe-walk')} data-testid="safe-walk-action">
         <Animated.View style={[s.qaOuterRing, { opacity: outerRingOpacity, transform: [{ scale: outerRingScale }] }]} />
-        <View style={s.qaArrowDot}><Text style={s.qaArrowText}>{'\u2192'}</Text></View>
+        <View style={s.qaArrowDot}><Ionicons name="arrow-forward" size={8} color={COLORS.white} /></View>
         <Text style={s.qaIcon}>{'\u{1F6B6}'}</Text>
         <Text style={s.qaSafeText}>Safe Walk</Text>
+        <Text style={s.qaDesc}>Share your live route</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={s.qaNight} onPress={() => router.push('/night-check')}>
+      <TouchableOpacity style={s.qaNight} onPress={() => router.push('/night-check')} data-testid="night-check-action">
         <Text style={s.qaIcon}>{'\u{1F319}'}</Text>
         <Text style={s.qaNightText}>Night Check</Text>
+        <Text style={s.qaDesc}>Say goodnight safely</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={s.qaCheck} onPress={() => toast('\u{1F49A} All good \u2014 your circle knows')}>
+      <TouchableOpacity style={s.qaCheck} onPress={() => { toast('\u{1F49A} All good \u2014 your circle knows'); }} data-testid="check-in-action">
+        <Animated.View style={[s.qaCheckPulse, { opacity: statusDotAnim }]} />
         <Text style={s.qaIcon}>{'\u{1F49A}'}</Text>
         <Text style={s.qaCheckText}>Check In</Text>
+        <Text style={s.qaDesc}>Quick status update</Text>
       </TouchableOpacity>
     </View>
   );
