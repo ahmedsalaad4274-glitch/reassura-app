@@ -104,9 +104,9 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ user, visible, onClo
 
             <Text style={styles.name}>{user.name}</Text>
             <Text style={styles.statusLine}>
-              {user.status_emoji} {user.status.replace('_', ' ')} \u00B7 {formatTime(user.updated_at)}
+              {user.status_emoji} {user.status.replace('_', ' ')} {'\u00B7'} {formatTime(user.updated_at)}
             </Text>
-            {user.status_message && <Text style={styles.message}>\u201C{user.status_message}\u201D</Text>}
+            {user.status_message && <Text style={styles.message}>{'\u201C'}{user.status_message}{'\u201D'}</Text>}
 
             {/* Battery / Driving indicators */}
             <View style={styles.indicators}>
