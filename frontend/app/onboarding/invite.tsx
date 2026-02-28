@@ -20,6 +20,7 @@ export default function InviteScreen() {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [showQR, setShowQR] = useState(false);
+  const setOnboardingComplete = useOnboardingStore(s => s.setComplete);
 
   const handleShare = async () => {
     try {
