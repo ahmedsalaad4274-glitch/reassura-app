@@ -8,6 +8,7 @@ import { BlurView } from 'expo-blur';
 import { COLORS, FONTS, SPACING, GLASS_CARD } from '../constants/theme';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
+import { useOnboardingStore } from '../store/onboardingStore';
 
 const SIDEBAR_WIDTH = Dimensions.get('window').width * 0.82;
 
@@ -109,6 +110,11 @@ export const EnhancedSidebar: React.FC<SidebarProps> = ({ visible, onClose }) =>
               <NavItem icon="airplane" label="Travel" onPress={() => navigate('/travel')} />
               <NavItem icon="notifications" label="Notifications" onPress={() => navigate('/notifications')} />
               <NavItem icon="person" label="My Profile" onPress={() => navigate('/profile')} />
+              <NavItem icon="rocket" label="Get Started" onPress={() => {
+                useOnboardingStore.getState().setComplete(false);
+                onClose();
+                setTimeout(() => router.replace('/onboarding/demo'), 150);
+              }} />
             </View>
 
             <View style={styles.divider} />
