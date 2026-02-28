@@ -137,7 +137,7 @@ export const EnhancedSidebar: React.FC<SidebarProps> = ({ visible, onClose }) =>
 
             <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.signOutBtn} onPress={() => { onClose(); useAuthStore.getState().logout(); router.replace('/onboarding'); }}>
+            <TouchableOpacity style={styles.signOutBtn} onPress={() => { onClose(); useAuthStore.getState().logout(); router.replace('/auth'); }}>
               <Ionicons name="log-out-outline" size={18} color={COLORS.textMuted} />
               <Text style={styles.signOutText}>Sign Out</Text>
             </TouchableOpacity>

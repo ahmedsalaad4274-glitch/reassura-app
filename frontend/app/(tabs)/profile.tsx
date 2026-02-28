@@ -162,7 +162,7 @@ export default function ProfileScreen() {
     setShowAddPlace(false);
   };
 
-  const handleSignOut = () => { logout(); router.replace('/onboarding'); };
+  const handleSignOut = () => { logout(); router.replace('/auth'); };
   const statusColor = COLORS.sageGreen;
 
   return (
