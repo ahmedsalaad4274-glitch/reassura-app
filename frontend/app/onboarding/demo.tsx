@@ -181,7 +181,14 @@ export default function DemoScreen() {
 
           {/* Feature card */}
           <View style={[s.featureCard, { backgroundColor: current.card.bg, borderColor: current.card.border }]}>
-            <Text style={s.featureEmoji}>{current.card.emoji}</Text>
+            <LinearGradient
+              colors={['rgba(61,107,80,0.7)', 'rgba(122,158,135,0.35)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={s.featureIconCircle}
+            >
+              <Text style={s.featureEmoji}>{current.card.emoji}</Text>
+            </LinearGradient>
             <View style={{ flex: 1 }}>
               <Text style={s.featureName}>{current.card.name}</Text>
               <Text style={s.featureDesc}>{current.card.desc}</Text>
@@ -208,11 +215,26 @@ const s = StyleSheet.create({
   heading: { fontFamily: ONBOARDING.heading, color: '#fff', fontSize: 20, marginTop: 16, marginBottom: 4 },
   subtitle: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 19, marginBottom: 12 },
   featureCard: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1, paddingVertical: 10, paddingHorizontal: 12, gap: 10, marginBottom: 4 },
-  featureEmoji: { fontSize: 18 },
+  featureIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(122,158,135,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  featureEmoji: { fontSize: 22 },
   featureName: { fontFamily: ONBOARDING.bodyBold, color: '#fff', fontSize: 12 },
   featureDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.55)', fontSize: 10, marginTop: 1 },
   // Phone frame
-  phone: { width: 130, height: 220, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.1)', padding: 10, justifyContent: 'center', overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOpacity: 0.3, shadowOffset: { width: 0, height: 4 }, shadowRadius: 12 },
+  phone: { width: 170, height: 260, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.1)', padding: 10, justifyContent: 'center', overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOpacity: 0.3, shadowOffset: { width: 0, height: 4 }, shadowRadius: 12 },
   miniGreeting: { fontFamily: ONBOARDING.bodyMed, color: '#fff', fontSize: 7, marginBottom: 6 },
   miniHomeBtn: { alignItems: 'center', marginBottom: 6, position: 'relative' },
   miniHomeBtnInner: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
