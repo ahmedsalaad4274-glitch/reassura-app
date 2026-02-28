@@ -114,10 +114,44 @@ export default function AddHomeScreen() {
 
   const handleContinue = () => { router.push('/onboarding/invite'); };
 
+  // Read back map results when returning from add-location screen
+  useFocusEffect(
+    useCallback(() => {
+      const readMapResult = async () => {
+        try {
+          const raw = await AsyncStorage.getItem('reassura_location_result');
+          if (!raw) return;
+          const result = JSON.parse(raw);
+          await AsyncStorage.removeItem('reassura_location_result');
+          const { slotKey, neighbourhood } = result;
+          // Update or add the place with matching key
+          const existing = places.find(p => p.key === slotKey);
+          let updated: SavedPlace[];
+          if (existing) {
+            updated = places.map(p => p.key === slotKey ? { ...p, neighbourhood } : p);
+          } else {
+            const slot = defaultSlots.find(s => s.key === slotKey);
+            updated = [...places, { key: slotKey, emoji: slot?.emoji || '\ud83d\udccd', label: slot?.label || slotKey, neighbourhood }];
+          }
+          await savePlaces(updated);
+          // Flash animation
+          const idx = updated.findIndex(p => p.key === slotKey);
+          setFlashIdx(idx);
+          flashAnim.setValue(1);
+          Animated.timing(flashAnim, { toValue: 0, duration: 1200, useNativeDriver: false }).start(() => setFlashIdx(null));
+          setToast(true);
+          setTimeout(() => setToast(false), 2000);
+        } catch {}
+      };
+      readMapResult();
+    }, [places])
+  );
+
   // Default slots that aren't saved yet
   const defaultSlots = [
     { emoji: '\ud83c\udfe0', label: 'Home', key: 'home', pinColour: 'sage' },
     { emoji: '\ud83d\udcbc', label: 'Work', key: 'work', pinColour: 'blue' },
+    { emoji: '\u2b50', label: 'Custom place', key: 'custom', pinColour: 'amber' },
   ];
 
   const openMapForSlot = (slotKey: string, emoji: string, label: string, pinColour: string) => {
