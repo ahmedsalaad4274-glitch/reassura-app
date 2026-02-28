@@ -72,7 +72,7 @@ export const EnhancedSidebar: React.FC<SidebarProps> = ({ visible, onClose }) =>
                   <View style={styles.avatarInner}><Text style={styles.avatarEmoji}>{currentUser?.emoji || userEmoji}</Text></View>
                 )}
               </View>
-              <Text style={styles.headerName}>{currentUser?.name || userName || 'You'}</Text>
+              <Text style={styles.headerName}>{currentUser?.name || userName || 'Rinade'}</Text>
               <Text style={styles.headerStatus}>{currentUser?.status_emoji || '\u{1F3E0}'} {currentUser?.status?.replace('_', ' ') || 'Home'}</Text>
             </View>
 
