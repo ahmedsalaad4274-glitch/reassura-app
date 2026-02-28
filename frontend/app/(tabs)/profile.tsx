@@ -365,7 +365,8 @@ export default function ProfileScreen() {
         )}
 
         {/* Add Place Modal */}
-        <Modal visible={showAddPlace} transparent animationType="slide">
+        <Modal visible={showAddPlace} transparent animationType="slide" statusBarTranslucent>
+          <BlurView intensity={85} tint="dark" style={StyleSheet.absoluteFill} />
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.optionCardHeader}>
@@ -653,10 +654,10 @@ const styles = StyleSheet.create({
   placeName: { fontFamily: FONTS.bodyMedium, fontSize: 14, color: COLORS.white },
   placeType: { fontFamily: FONTS.body, fontSize: 11, color: COLORS.muted, textTransform: 'capitalize' },
   // Modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
+  modalOverlay: { flex: 1, justifyContent: 'flex-end' },
   modalContent: {
-    backgroundColor: COLORS.backgroundCard, borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    padding: SPACING.xl, paddingBottom: 40,
+    backgroundColor: 'rgba(26,22,18,0.97)', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: SPACING.xl, paddingBottom: 40, borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
   },
   modalInput: {
     fontFamily: FONTS.body, fontSize: 16, color: COLORS.white,

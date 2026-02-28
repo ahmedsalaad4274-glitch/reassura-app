@@ -244,7 +244,8 @@ export default function CirclesScreen() {
       </ScrollView>
       
       {/* Create Circle Modal */}
-      <Modal visible={showCreateModal} animationType="slide" transparent>
+      <Modal visible={showCreateModal} animationType="slide" transparent statusBarTranslucent>
+        <BlurView intensity={85} tint="dark" style={StyleSheet.absoluteFill} />
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             {/* Progress indicator */}
@@ -469,7 +470,8 @@ export default function CirclesScreen() {
       </Modal>
       
       {/* Celebration Modal */}
-      <Modal visible={showCelebration} animationType="fade" transparent>
+      <Modal visible={showCelebration} animationType="fade" transparent statusBarTranslucent>
+        <BlurView intensity={85} tint="dark" style={StyleSheet.absoluteFill} />
         <View style={styles.celebrationOverlay}>
           <View style={[styles.celebrationCircle, { backgroundColor: newCircle.color }]}>
             <Text style={styles.celebrationEmoji}>{newCircle.emoji}</Text>

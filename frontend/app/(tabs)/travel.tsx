@@ -364,7 +364,8 @@ export default function TravelScreen() {
       </View>
       
       {/* Landing Celebration Modal */}
-      <Modal visible={showLandingCelebration} animationType="fade" transparent>
+      <Modal visible={showLandingCelebration} animationType="fade" transparent statusBarTranslucent>
+        <BlurView intensity={85} tint="dark" style={StyleSheet.absoluteFill} />
         <View style={styles.celebrationOverlay}>
           <Text style={styles.celebrationEmoji}>🌍</Text>
           <Text style={styles.celebrationTitle}>{travel?.user_name || 'Sara'} has landed safely in Lagos!</Text>
