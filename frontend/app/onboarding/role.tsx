@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
+
+const OTHER_IDX = 5;
 
 const ROLES = [
   { emoji: '\ud83d\udc69\ud83c\udffe', name: 'Mum / Parent', desc: 'Keeping an eye on my family' },
@@ -11,15 +13,21 @@ const ROLES = [
   { emoji: '\ud83e\uddd1\ud83c\udffe', name: 'Son / Daughter', desc: 'Letting family know I\u2019m safe' },
   { emoji: '\ud83d\udc74\ud83c\udffe', name: 'Grandparent', desc: 'Staying connected with family' },
   { emoji: '\ud83d\udc6b\ud83c\udffe', name: 'Partner / Friend', desc: 'Staying close with someone I love' },
+  { emoji: '\u270F\uFE0F', name: 'Other', desc: 'Define your own role' },
 ];
 
 export default function RoleScreen() {
   const router = useRouter();
   const [selected, setSelected] = useState<number | null>(null);
+  const [customRole, setCustomRole] = useState('');
+
+  const isOther = selected === OTHER_IDX;
+  const canContinue = selected !== null && (!isOther || customRole.trim().length > 0);
 
   const handleContinue = async () => {
-    if (selected === null) return;
-    await AsyncStorage.setItem('reassura_user_role', ROLES[selected].name);
+    if (!canContinue) return;
+    const roleName = isOther ? customRole.trim() : ROLES[selected!].name;
+    await AsyncStorage.setItem('reassura_user_role', roleName);
     router.push('/onboarding/avatar');
   };
 
@@ -29,7 +37,6 @@ export default function RoleScreen() {
         <Text style={shared.backText}>{'\u2190'}</Text>
       </TouchableOpacity>
 
-      {/* Progress dots */}
       <View style={shared.progressRow}>
         {[0, 1, 2, 3, 4].map(i => (
           <View key={i} style={i === 0 ? shared.progressDotActive : shared.progressDot} />
@@ -43,33 +50,44 @@ export default function RoleScreen() {
         {ROLES.map((role, idx) => {
           const active = selected === idx;
           return (
-            <TouchableOpacity
-              key={idx}
-              style={[styles.card, active && styles.cardActive]}
-              onPress={() => setSelected(idx)}
-              activeOpacity={0.7}
-              data-testid={`role-card-${idx}`}
-            >
-              <Text style={styles.emoji}>{role.emoji}</Text>
-              <View style={styles.textCol}>
-                <Text style={styles.name}>{role.name}</Text>
-                <Text style={styles.desc}>{role.desc}</Text>
-              </View>
-              <View style={[styles.check, active && styles.checkActive]}>
-                {active && <Text style={styles.tick}>{'\u2713'}</Text>}
-              </View>
-            </TouchableOpacity>
+            <View key={idx}>
+              <TouchableOpacity
+                style={[styles.card, active && styles.cardActive]}
+                onPress={() => setSelected(idx)}
+                activeOpacity={0.7}
+                data-testid={`role-card-${idx}`}
+              >
+                <Text style={styles.emoji}>{role.emoji}</Text>
+                <View style={styles.textCol}>
+                  <Text style={styles.name}>{role.name}</Text>
+                  <Text style={styles.desc}>{role.desc}</Text>
+                </View>
+                <View style={[styles.check, active && styles.checkActive]}>
+                  {active && <Text style={styles.tick}>{'\u2713'}</Text>}
+                </View>
+              </TouchableOpacity>
+              {idx === OTHER_IDX && active && (
+                <TextInput
+                  style={styles.customInput}
+                  value={customRole}
+                  onChangeText={setCustomRole}
+                  placeholder="Type your role..."
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  autoFocus
+                  data-testid="custom-role-input"
+                />
+              )}
+            </View>
           );
         })}
       </ScrollView>
 
-      {/* Continue button */}
-      <TouchableOpacity onPress={handleContinue} disabled={selected === null} activeOpacity={0.8} data-testid="role-continue-btn">
+      <TouchableOpacity onPress={handleContinue} disabled={!canContinue} activeOpacity={0.8} data-testid="role-continue-btn">
         <LinearGradient
-          colors={selected !== null ? ['#5A8A6A', '#7A9E87'] : ['#333', '#444']}
+          colors={canContinue ? ['#5A8A6A', '#7A9E87'] : ['#333', '#444']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[shared.btnPrimary, selected === null && { opacity: 0.4 }]}
+          style={[shared.btnPrimary, !canContinue && { opacity: 0.4 }]}
         >
           <Text style={shared.btnPrimaryText}>Continue {'\u2192'}</Text>
         </LinearGradient>
