@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
+import { BlurView } from 'expo-blur';
 import { useAppStore } from '../../src/store/appStore';
 import { circleApi, userApi } from '../../src/services/api';
 

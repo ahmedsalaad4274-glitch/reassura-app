@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CrossPlatformPager } from '../../src/components/CrossPlatformPager';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
+import { BlurView } from 'expo-blur';
 import { useAppStore } from '../../src/store/appStore';
 import { travelApi, userApi } from '../../src/services/api';
 
