@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../src/constants/theme';
 import { useAuthStore } from '../src/store/authStore';
+import { useOnboardingStore } from '../src/store/onboardingStore';
 
 export default function RootLayout() {
   const { isAuthenticated, isOnboarded, loadFromStorage } = useAuthStore();
