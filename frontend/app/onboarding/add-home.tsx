@@ -1,225 +1,211 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
 
-const DEFAULT_LOCATION = { lat: 51.5074, lng: -0.1278, name: 'Clapton, London' };
+type Slot = { key: string; emoji: string; label: string; neighbourhood: string | null; editable?: boolean };
+
+const STORAGE_KEY = 'reassura_saved_places';
 
 export default function AddHomeScreen() {
   const router = useRouter();
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [dragging, setDragging] = useState(false);
-  const neighbourhood = DEFAULT_LOCATION.name;
+  const [slots, setSlots] = useState<Slot[]>([
+    { key: 'home', emoji: '\ud83c\udfe0', label: 'Home', neighbourhood: null },
+    { key: 'work', emoji: '\ud83d\udcbc', label: 'Work', neighbourhood: null },
+    { key: 'custom', emoji: '\ud83d\udccd', label: '', neighbourhood: null, editable: true },
+  ]);
+  const [customLabel, setCustomLabel] = useState('');
 
-  const handleSave = async () => {
-    await AsyncStorage.setItem('reassura_home_location', JSON.stringify({
-      neighbourhood: 'Clapton',
-      city: 'London',
-    }));
+  useEffect(() => {
+    loadPlaces();
+  }, []);
+
+  const loadPlaces = async () => {
+    try {
+      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setSlots(prev => prev.map(s => {
+          const saved = parsed[s.key];
+          if (saved) return { ...s, neighbourhood: saved.neighbourhood, label: saved.label || s.label };
+          return s;
+        }));
+        if (parsed.custom?.label) setCustomLabel(parsed.custom.label);
+      }
+      // Check if home was already set from a previous step
+      const homeLoc = await AsyncStorage.getItem('reassura_home_location');
+      if (homeLoc) {
+        const home = JSON.parse(homeLoc);
+        setSlots(prev => prev.map(s => s.key === 'home' ? { ...s, neighbourhood: home.neighbourhood } : s));
+      }
+    } catch {}
+  };
+
+  const handleAddLocation = (slotKey: string) => {
+    const slot = slots.find(s => s.key === slotKey);
+    const label = slotKey === 'custom' ? (customLabel || 'Place') : (slot?.label || 'Place');
+    router.push({ pathname: '/onboarding/add-location', params: { slotKey, slotEmoji: slot?.emoji || '\ud83d\udccd', slotLabel: label } });
+  };
+
+  const handleContinue = async () => {
+    const data: Record<string, any> = {};
+    slots.forEach(s => {
+      if (s.neighbourhood) {
+        data[s.key] = { neighbourhood: s.neighbourhood, label: s.key === 'custom' ? (customLabel || 'Place') : s.label };
+      }
+    });
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     router.push('/onboarding/invite');
   };
 
-  const handleSkip = () => {
-    router.push('/onboarding/invite');
-  };
+  // Listen for returning from add-location screen
+  useEffect(() => {
+    const check = async () => {
+      const result = await AsyncStorage.getItem('reassura_location_result');
+      if (result) {
+        const { slotKey, neighbourhood } = JSON.parse(result);
+        setSlots(prev => prev.map(s => s.key === slotKey ? { ...s, neighbourhood } : s));
+        await AsyncStorage.removeItem('reassura_location_result');
+      }
+    };
+    const interval = setInterval(check, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <View style={[shared.container, shared.safeTop, { paddingHorizontal: 0 }]}>
-      <View style={{ paddingHorizontal: 16 }}>
-        <TouchableOpacity style={shared.backBtn} onPress={() => router.back()} data-testid="home-back-btn">
-          <Text style={shared.backText}>{'\u2190'}</Text>
-        </TouchableOpacity>
+    <View style={[shared.container, shared.safeTop]}>
+      <TouchableOpacity style={shared.backBtn} onPress={() => router.back()} data-testid="home-back-btn">
+        <Text style={shared.backText}>{'\u2190'}</Text>
+      </TouchableOpacity>
 
-        <View style={shared.progressRow}>
-          {[0, 1, 2, 3, 4].map(i => (
-            <View key={i} style={i === 3 ? shared.progressDotActive : shared.progressDot} />
-          ))}
-        </View>
-
-        <Text style={shared.title}>Where{'\u2019'}s home? {'\ud83c\udfe0'}</Text>
-        <Text style={[shared.subtitle, { color: ONBOARDING.sage, fontSize: 9 }]}>
-          We store your neighbourhood {'\u2014'} never your exact address {'\ud83c\udf3f'}
-        </Text>
+      <View style={shared.progressRow}>
+        {[0, 1, 2, 3, 4].map(i => (
+          <View key={i} style={i === 3 ? shared.progressDotActive : shared.progressDot} />
+        ))}
       </View>
 
-      {/* Map area */}
-      <View style={styles.mapContainer}>
-        {/* Map background — styled dark map */}
-        <View style={styles.mapBg}>
-          {/* Grid roads */}
-          <View style={[styles.hRoad, { top: '20%' }]} />
-          <View style={[styles.hRoad, { top: '40%' }]} />
-          <View style={[styles.hRoad, { top: '60%' }]} />
-          <View style={[styles.hRoad, { top: '80%' }]} />
-          <View style={[styles.vRoad, { left: '15%' }]} />
-          <View style={[styles.vRoad, { left: '35%' }]} />
-          <View style={[styles.vRoad, { left: '55%' }]} />
-          <View style={[styles.vRoad, { left: '75%' }]} />
-          {/* Main roads */}
-          <View style={[styles.mainH, { top: '50%' }]} />
-          <View style={[styles.mainV, { left: '45%' }]} />
-          {/* Park areas */}
-          <View style={[styles.parkArea, { top: '12%', left: '8%', width: 70, height: 45 }]} />
-          <View style={[styles.parkArea, { bottom: '15%', right: '10%', width: 55, height: 38 }]} />
-          <View style={[styles.parkArea, { top: '60%', left: '25%', width: 40, height: 30 }]} />
-          {/* Building blocks */}
-          <View style={[styles.block, { top: '25%', left: '45%', width: 35, height: 22 }]} />
-          <View style={[styles.block, { top: '30%', right: '20%', width: 28, height: 18 }]} />
-          <View style={[styles.block, { bottom: '35%', left: '15%', width: 32, height: 20 }]} />
+      <Text style={shared.title}>Your saved places {'\ud83d\udccd'}</Text>
+      <Text style={shared.subtitle}>Add up to 3 places so Reassura knows when you{'\u2019'}re somewhere familiar.</Text>
 
-          {/* Neighbourhood ring */}
-          <View style={styles.neighbourhoodRing} />
-
-          {/* Pin — fixed at centre, pointing DOWN */}
-          <View style={styles.pinContainer}>
-            <View style={styles.pinOuter}>
-              <LinearGradient colors={['#3D6B50', '#7A9E87']} style={styles.teardrop}>
-                <View style={styles.pinFace}>
-                  <Text style={styles.pinEmoji}>{'\ud83c\udfe0'}</Text>
-                </View>
-              </LinearGradient>
-              <View style={styles.pinPoint} />
-            </View>
-            <View style={styles.pinShadow} />
-          </View>
-        </View>
-
-        {/* Hint */}
-        <Text style={styles.hintText}>Drag the map to adjust your pin</Text>
-
-        {/* Bottom overlay panel */}
-        <View style={styles.bottomPanel}>
-          <View style={styles.addressRow}>
-            <Text style={styles.addressIcon}>{'\ud83c\udfe0'}</Text>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {slots.map((slot) => (
+          <View key={slot.key} style={[styles.slotCard, slot.neighbourhood && styles.slotFilled]} data-testid={`slot-${slot.key}`}>
+            <Text style={styles.slotEmoji}>{slot.emoji}</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.addressLabel}>Home <Text style={styles.addressName}>{neighbourhood}</Text></Text>
-              <Text style={styles.addressNote}>{'\ud83c\udf3f'} Neighbourhood stored only {'\u00B7'} never your exact address</Text>
+              {slot.editable && !slot.neighbourhood ? (
+                <TextInput
+                  style={styles.customLabelInput}
+                  value={customLabel}
+                  onChangeText={setCustomLabel}
+                  placeholder="Name this place (Gym, School...)"
+                  placeholderTextColor="rgba(255,255,255,0.35)"
+                  data-testid="custom-place-label"
+                />
+              ) : (
+                <Text style={styles.slotLabel}>{slot.key === 'custom' ? (customLabel || 'Custom place') : slot.label}</Text>
+              )}
+              {slot.neighbourhood ? (
+                <Text style={styles.slotNeighbourhood}>{slot.neighbourhood}</Text>
+              ) : (
+                <Text style={styles.slotPlaceholder}>Tap to add</Text>
+              )}
             </View>
+            {slot.neighbourhood ? (
+              <TouchableOpacity onPress={() => handleAddLocation(slot.key)} data-testid={`edit-${slot.key}`}>
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.addBtn} onPress={() => handleAddLocation(slot.key)} data-testid={`add-${slot.key}`}>
+                <Text style={styles.addBtnText}>+</Text>
+              </TouchableOpacity>
+            )}
           </View>
+        ))}
 
-          <TouchableOpacity onPress={handleSave} activeOpacity={0.8} data-testid="home-save-btn">
-            <LinearGradient colors={['#5A8A6A', '#7A9E87']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={shared.btnPrimary}>
-              <Text style={shared.btnPrimaryText}>Save my home {'\u2192'}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={shared.btnGhost} onPress={handleSkip} data-testid="home-skip-btn">
-            <Text style={shared.btnGhostText}>Skip {'\u2014'} add later</Text>
-          </TouchableOpacity>
+        {/* Info card */}
+        <View style={styles.infoCard}>
+          <Text style={styles.infoIcon}>{'\ud83c\udf3f'}</Text>
+          <Text style={styles.infoText}>
+            When you{'\u2019'}re at these places Reassura can suggest a quick check-in. Your circle will recognise where you are.
+          </Text>
         </View>
-      </View>
+      </ScrollView>
+
+      <TouchableOpacity onPress={handleContinue} activeOpacity={0.8} data-testid="home-continue-btn">
+        <LinearGradient colors={['#5A8A6A', '#7A9E87']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={shared.btnPrimary}>
+          <Text style={shared.btnPrimaryText}>Continue {'\u2192'}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={shared.btnGhost} onPress={() => router.push('/onboarding/invite')} data-testid="home-skip-btn">
+        <Text style={shared.btnGhostText}>Skip {'\u2014'} add later</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mapContainer: { flex: 1, position: 'relative' },
-  mapBg: {
-    flex: 1,
-    backgroundColor: '#1E1A16',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  hRoad: { position: 'absolute', left: 0, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.06)' },
-  vRoad: { position: 'absolute', top: 0, bottom: 0, width: 1, backgroundColor: 'rgba(255,255,255,0.06)' },
-  mainH: { position: 'absolute', left: 0, right: 0, height: 3, backgroundColor: 'rgba(240,205,122,0.18)' },
-  mainV: { position: 'absolute', top: 0, bottom: 0, width: 3, backgroundColor: 'rgba(240,205,122,0.18)' },
-  parkArea: { position: 'absolute', backgroundColor: 'rgba(122,158,135,0.12)', borderRadius: 6 },
-  block: { position: 'absolute', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 3, borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)' },
-  neighbourhoodRing: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    width: 180,
-    height: 180,
-    marginLeft: -90,
-    marginTop: -90,
-    borderRadius: 90,
-    backgroundColor: 'rgba(122,158,135,0.15)',
-    borderWidth: 2,
-    borderColor: 'rgba(122,158,135,0.4)',
-  },
-  pinContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginLeft: -22,
-    marginTop: -48,
+  slotCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    zIndex: 10,
+    borderRadius: 13,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderStyle: 'dashed',
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    marginBottom: 8,
+    gap: 12,
   },
-  pinOuter: { alignItems: 'center' },
-  teardrop: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 3,
-    borderColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.35,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+  slotFilled: {
+    borderStyle: 'solid',
+    borderColor: 'rgba(122,158,135,0.25)',
+    backgroundColor: 'rgba(122,158,135,0.06)',
   },
-  pinPoint: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 9,
-    borderRightWidth: 9,
-    borderTopWidth: 12,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#7A9E87',
-    marginTop: -3,
+  slotEmoji: { fontSize: 24 },
+  slotLabel: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13 },
+  slotNeighbourhood: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.65)', fontSize: 12, marginTop: 1 },
+  slotPlaceholder: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 1 },
+  customLabelInput: {
+    fontFamily: ONBOARDING.bodyBold,
+    color: ONBOARDING.white,
+    fontSize: 13,
+    padding: 0,
+    margin: 0,
   },
-  pinFace: {
+  editText: { fontFamily: ONBOARDING.bodyMed, color: ONBOARDING.sage, fontSize: 12 },
+  addBtn: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(122,158,135,0.35)',
+    backgroundColor: 'rgba(122,158,135,0.08)',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  pinEmoji: { fontSize: 18 },
-  pinShadow: {
-    width: 14,
-    height: 6,
-    borderRadius: 7,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    marginTop: 2,
-  },
-  hintText: {
-    position: 'absolute',
-    bottom: 160,
-    alignSelf: 'center',
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.60)',
-    fontFamily: ONBOARDING.body,
-  },
-  bottomPanel: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(18,14,10,0.93)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.06)',
-    paddingHorizontal: 13,
-    paddingTop: 11,
-    paddingBottom: 20,
-  },
-  addressRow: {
+  addBtnText: { color: ONBOARDING.sage, fontSize: 18, fontWeight: '300', marginTop: -1 },
+  infoCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: 'rgba(122,158,135,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(122,158,135,0.15)',
+    borderRadius: 11,
+    padding: 12,
     gap: 10,
-    marginBottom: 12,
+    marginTop: 8,
+    marginBottom: 16,
   },
-  addressIcon: { fontSize: 18 },
-  addressLabel: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13 },
-  addressName: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.5)', fontSize: 13 },
-  addressNote: { fontFamily: ONBOARDING.body, color: ONBOARDING.sage, fontSize: 11, marginTop: 2 },
+  infoIcon: { fontSize: 14, marginTop: 1 },
+  infoText: {
+    flex: 1,
+    fontFamily: ONBOARDING.body,
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.60)',
+    lineHeight: 17,
+  },
 });
