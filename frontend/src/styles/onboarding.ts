@@ -4,7 +4,7 @@ export const ONBOARDING = {
   bg: '#1A1612',
   sage: '#7A9E87',
   white: '#FFFFFF',
-  muted: 'rgba(255,255,255,0.38)',
+  muted: 'rgba(255,255,255,0.68)',
   cardBg: 'rgba(255,255,255,0.03)',
   cardBorder: 'rgba(255,255,255,0.08)',
   heading: 'Fraunces_700Bold',
@@ -60,7 +60,7 @@ export const onboardingStyles = StyleSheet.create({
   subtitle: {
     fontFamily: ONBOARDING.body,
     fontSize: 13,
-    color: ONBOARDING.muted,
+    color: 'rgba(255,255,255,0.68)',
     marginBottom: 16,
     lineHeight: 19,
   },
@@ -84,6 +84,6 @@ export const onboardingStyles = StyleSheet.create({
     fontFamily: ONBOARDING.body,
     textAlign: 'center' as const,
     fontSize: 12,
-    color: 'rgba(255,255,255,0.35)',
+    color: 'rgba(255,255,255,0.60)',
   },
 });
