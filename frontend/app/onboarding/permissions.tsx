@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   permIcon: { fontSize: 20, marginTop: 1 },
   permName: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13, marginBottom: 3 },
-  permDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.45)', fontSize: 12, lineHeight: 17 },
+  permDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.65)', fontSize: 12, lineHeight: 17 },
   promiseBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   promiseText: {
     flex: 1,
     fontFamily: ONBOARDING.body,
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.42)',
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.60)',
     fontStyle: 'italic',
     lineHeight: 17,
   },

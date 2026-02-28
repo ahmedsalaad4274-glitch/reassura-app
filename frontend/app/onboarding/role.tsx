@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 22, marginRight: 12 },
   textCol: { flex: 1 },
   name: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13 },
-  desc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.45)', fontSize: 12, marginTop: 1 },
+  desc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.65)', fontSize: 12, marginTop: 1 },
   check: {
     width: 18,
     height: 18,

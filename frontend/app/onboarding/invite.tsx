@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   codeHint: {
     fontFamily: ONBOARDING.body,
     fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(255,255,255,0.60)',
     marginTop: 6,
   },
   consentCard: {
@@ -168,8 +168,8 @@ const styles = StyleSheet.create({
   consentText: {
     flex: 1,
     fontFamily: ONBOARDING.body,
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.60)',
     lineHeight: 17,
   },
   methodGrid: {
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   methodEmoji: { fontSize: 18 },
-  methodLabel: { fontFamily: ONBOARDING.bodyMed, fontSize: 12, color: 'rgba(255,255,255,0.55)' },
+  methodLabel: { fontFamily: ONBOARDING.bodyMed, fontSize: 12, color: 'rgba(255,255,255,0.65)' },
   qrBox: {
     alignItems: 'center',
     marginBottom: 16,

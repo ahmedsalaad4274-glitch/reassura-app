@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(255,255,255,0.60)',
     letterSpacing: 1,
     fontFamily: ONBOARDING.bodyMed,
     marginBottom: 10,
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   divider: {
     textAlign: 'center',
     fontSize: 11,
-    color: 'rgba(255,255,255,0.25)',
+    color: 'rgba(255,255,255,0.60)',
     marginVertical: 14,
   },
   uploadBtn: {
