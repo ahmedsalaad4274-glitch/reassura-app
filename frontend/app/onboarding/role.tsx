@@ -131,4 +131,17 @@ const styles = StyleSheet.create({
     borderColor: ONBOARDING.sage,
   },
   tick: { color: ONBOARDING.white, fontSize: 11, fontWeight: '700' },
+  customInput: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    marginTop: -2,
+    fontFamily: ONBOARDING.body,
+    color: ONBOARDING.white,
+    fontSize: 12,
+  },
 });
