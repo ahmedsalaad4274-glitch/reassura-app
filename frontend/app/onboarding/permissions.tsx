@@ -90,6 +90,8 @@ export default function PermissionsScreen() {
             You can delete your account and all data in one tap.
           </Text>
         </View>
+
+        <OnboardingMessages />
       </ScrollView>
 
       {/* Allow button */}

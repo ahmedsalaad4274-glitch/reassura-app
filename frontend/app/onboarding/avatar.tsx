@@ -138,6 +138,8 @@ export default function AvatarScreen() {
         <TouchableOpacity style={styles.uploadBtn} onPress={pickImage} data-testid="upload-photo-btn">
           <Text style={styles.uploadText}>{'\ud83d\udcf7'} Upload a photo</Text>
         </TouchableOpacity>
+
+        <OnboardingMessages />
       </ScrollView>
 
       <TouchableOpacity onPress={handleContinue} activeOpacity={0.8} data-testid="avatar-continue-btn">

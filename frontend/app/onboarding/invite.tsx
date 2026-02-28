@@ -112,6 +112,8 @@ export default function InviteScreen() {
             </View>
           </View>
         )}
+
+        <OnboardingMessages />
       </ScrollView>
 
       {/* Done link */}

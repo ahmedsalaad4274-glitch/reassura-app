@@ -81,6 +81,8 @@ export default function RoleScreen() {
             </View>
           );
         })}
+
+        <OnboardingMessages />
       </ScrollView>
 
       <TouchableOpacity onPress={handleContinue} disabled={!canContinue} activeOpacity={0.8} data-testid="role-continue-btn">
