@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,11 +12,17 @@ const EMOJIS = [
   '\ud83e\uddd1\ud83c\udffe','\ud83d\udc74\ud83c\udffe','\ud83d\udc75\ud83c\udffe','\ud83e\uddd2\ud83c\udffe',
 ];
 
+const EMOJI_REGEX = /\p{Extended_Pictographic}/u;
+
 export default function AvatarScreen() {
   const router = useRouter();
   const [selectedEmoji, setSelectedEmoji] = useState(EMOJIS[0]);
+  const [customEmoji, setCustomEmoji] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);
   const pinScale = useRef(new Animated.Value(1)).current;
+
+  const isCustomValid = customEmoji.length > 0 && EMOJI_REGEX.test(customEmoji);
+  const displayEmoji = isCustomValid ? customEmoji : selectedEmoji;
 
   const animatePin = () => {
     Animated.sequence([
@@ -27,8 +33,15 @@ export default function AvatarScreen() {
 
   const handleEmojiSelect = (emoji: string) => {
     setSelectedEmoji(emoji);
+    setCustomEmoji('');
     setPhoto(null);
     animatePin();
+  };
+
+  const handleCustomChange = (text: string) => {
+    setCustomEmoji(text);
+    setPhoto(null);
+    if (EMOJI_REGEX.test(text)) animatePin();
   };
 
   const pickImage = async () => {
@@ -41,12 +54,13 @@ export default function AvatarScreen() {
     });
     if (!result.canceled && result.assets[0].base64) {
       setPhoto(`data:image/jpeg;base64,${result.assets[0].base64}`);
+      setCustomEmoji('');
       animatePin();
     }
   };
 
   const handleContinue = async () => {
-    await AsyncStorage.setItem('reassura_user_avatar', photo || selectedEmoji);
+    await AsyncStorage.setItem('reassura_user_avatar', photo || displayEmoji);
     router.push('/onboarding/permissions');
   };
 
@@ -67,7 +81,6 @@ export default function AvatarScreen() {
 
       {/* Map Pin Preview */}
       <View style={styles.mapPreview}>
-        {/* Hand-drawn map roads */}
         <View style={[styles.road, { top: '30%', left: 0, right: 0, height: 3 }]} />
         <View style={[styles.road, { top: '55%', left: 0, right: 0, height: 3 }]} />
         <View style={[styles.road, { top: '75%', left: 0, right: 0, height: 3 }]} />
@@ -77,19 +90,16 @@ export default function AvatarScreen() {
         <View style={[styles.park, { top: 12, left: 14, width: 50, height: 32 }]} />
         <View style={[styles.park, { bottom: 14, right: 20, width: 44, height: 28 }]} />
 
-        {/* Map Pin — teardrop */}
+        {/* Map Pin — teardrop pointing DOWN */}
         <Animated.View style={[styles.pinWrap, { transform: [{ scale: pinScale }] }]}>
-          <LinearGradient colors={['#3D6B50', '#7A9E87']} style={styles.teardrop}>
-            <View style={styles.pinFace}>
-              {photo ? (
-                <View style={styles.pinPhoto}>
-                  <Text style={{ fontSize: 22 }}>{selectedEmoji}</Text>
-                </View>
-              ) : (
-                <Text style={styles.pinEmoji}>{selectedEmoji}</Text>
-              )}
-            </View>
-          </LinearGradient>
+          <View style={styles.pinOuter}>
+            <LinearGradient colors={['#3D6B50', '#7A9E87']} style={styles.teardrop}>
+              <View style={styles.pinFace}>
+                <Text style={styles.pinEmoji}>{photo ? '\ud83d\udcf7' : displayEmoji}</Text>
+              </View>
+            </LinearGradient>
+            <View style={styles.pinPoint} />
+          </View>
           <View style={styles.pinShadow} />
         </Animated.View>
       </View>
@@ -101,7 +111,7 @@ export default function AvatarScreen() {
           {EMOJIS.map((e) => (
             <TouchableOpacity
               key={e}
-              style={[styles.emojiCell, selectedEmoji === e && !photo && styles.emojiCellActive]}
+              style={[styles.emojiCell, selectedEmoji === e && !isCustomValid && !photo && styles.emojiCellActive]}
               onPress={() => handleEmojiSelect(e)}
               data-testid={`emoji-${e}`}
             >
@@ -109,6 +119,16 @@ export default function AvatarScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Custom emoji input — Fix 1 */}
+        <TextInput
+          style={[styles.customInput, isCustomValid && styles.customInputActive]}
+          value={customEmoji}
+          onChangeText={handleCustomChange}
+          placeholder="Or type your own emoji..."
+          placeholderTextColor="rgba(255,255,255,0.3)"
+          data-testid="custom-emoji-input"
+        />
 
         {/* Divider */}
         <Text style={styles.divider}>{'\u2014'} or {'\u2014'}</Text>
@@ -144,12 +164,11 @@ const styles = StyleSheet.create({
   vRoad: { position: 'absolute', backgroundColor: 'rgba(255,255,255,0.75)' },
   park: { position: 'absolute', backgroundColor: '#BAD09A', borderRadius: 4 },
   pinWrap: { alignItems: 'center', zIndex: 10 },
+  pinOuter: { alignItems: 'center' },
   teardrop: {
     width: 52,
     height: 52,
     borderRadius: 26,
-    borderBottomRightRadius: 0,
-    transform: [{ rotate: '-45deg' }],
     borderWidth: 3,
     borderColor: '#fff',
     justifyContent: 'center',
@@ -160,6 +179,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
   },
+  pinPoint: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderTopWidth: 14,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#7A9E87',
+    marginTop: -3,
+  },
   pinFace: {
     width: 36,
     height: 36,
@@ -167,26 +197,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
-    transform: [{ rotate: '45deg' }],
   },
   pinEmoji: { fontSize: 22 },
-  pinPhoto: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
   pinShadow: {
     width: 14,
     height: 6,
     borderRadius: 7,
     backgroundColor: 'rgba(0,0,0,0.2)',
-    marginTop: 4,
+    marginTop: 2,
   },
   sectionLabel: {
-    fontSize: 9,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.4)',
     letterSpacing: 1,
     fontFamily: ONBOARDING.bodyMed,
@@ -211,9 +232,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(122,158,135,0.15)',
   },
   emojiText: { fontSize: 20 },
+  customInput: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 12,
+    fontFamily: ONBOARDING.body,
+    color: ONBOARDING.white,
+    fontSize: 14,
+  },
+  customInputActive: {
+    borderColor: ONBOARDING.sage,
+    backgroundColor: 'rgba(122,158,135,0.08)',
+  },
   divider: {
     textAlign: 'center',
-    fontSize: 9,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.25)',
     marginVertical: 14,
   },
@@ -229,6 +265,6 @@ const styles = StyleSheet.create({
   uploadText: {
     fontFamily: ONBOARDING.bodyMed,
     color: ONBOARDING.sage,
-    fontSize: 12,
+    fontSize: 13,
   },
 });
