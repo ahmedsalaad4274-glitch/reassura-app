@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment configuration
-BACKEND_URL = "https://private-family-app.preview.emergentagent.com/api"
+BACKEND_URL = "https://invite-circle-demo.preview.emergentagent.com/api"
 
 def test_profile_update_endpoint():
     """Test PUT /api/users/{user_id}/profile endpoint with profile_picture field"""
