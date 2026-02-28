@@ -154,19 +154,11 @@ export default function AddHomeScreen() {
                 )}
               </View>
               {saved ? (
-                <TouchableOpacity onPress={() => openAddModal(places.indexOf(saved))}>
+                <TouchableOpacity onPress={() => openMapForSlot(slot.key, slot.emoji, slot.label, slot.pinColour)}>
                   <Text style={styles.editText}>Edit</Text>
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity style={styles.addCircle} onPress={() => {
-                  setFormName(slot.label);
-                  setFormEmoji(slot.emoji);
-                  setFormLocation('');
-                  setEditIdx(null);
-                  setSuggestions([]);
-                  // Pre-set key for default slot
-                  setShowModal(true);
-                }}>
+                <TouchableOpacity style={styles.addCircle} onPress={() => openMapForSlot(slot.key, slot.emoji, slot.label, slot.pinColour)}>
                   <Text style={styles.addCircleText}>+</Text>
                 </TouchableOpacity>
               )}
