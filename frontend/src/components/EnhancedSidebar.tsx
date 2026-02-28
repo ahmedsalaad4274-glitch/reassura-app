@@ -151,8 +151,7 @@ export const EnhancedSidebar: React.FC<SidebarProps> = ({ visible, onClose }) =>
 
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)' },
-  sidebar: { width: SIDEBAR_WIDTH, height: '100%', backgroundColor: 'rgba(26,22,18,0.95)', paddingTop: 60, backdropFilter: 'blur(12px)' },
+  sidebar: { width: SIDEBAR_WIDTH, height: '100%', backgroundColor: 'rgba(26,22,18,0.97)', paddingTop: 60, borderRightWidth: 1, borderRightColor: 'rgba(255,255,255,0.08)' },
   header: { alignItems: 'center', paddingVertical: SPACING.lg, paddingHorizontal: SPACING.md },
   avatarRing: { width: 68, height: 68, borderRadius: 34, borderWidth: 2, borderColor: COLORS.sageGreen, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
   avatarInner: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255,255,255,0.04)', justifyContent: 'center', alignItems: 'center' },
