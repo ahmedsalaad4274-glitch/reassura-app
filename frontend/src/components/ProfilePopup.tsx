@@ -160,7 +160,7 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ user, visible, onClo
             </ScrollView>
 
             {/* Privacy note */}
-            <Text style={styles.privacy}>{'\u{1F33F}'} Status shared voluntarily \u00B7 No precise GPS stored</Text>
+            <Text style={styles.privacy}>{'\u{1F33F}'} Status shared voluntarily {'\u00B7'} No precise GPS stored</Text>
           </TouchableOpacity>
         </Animated.View>
       </TouchableOpacity>
