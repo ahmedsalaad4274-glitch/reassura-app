@@ -60,11 +60,10 @@ export const EnhancedSidebar: React.FC<SidebarProps> = ({ visible, onClose }) =>
   const navigate = (path: string) => { onClose(); setTimeout(() => router.push(path as any), 150); };
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
       <View style={styles.container}>
-        <Animated.View style={[styles.backdrop, { opacity: backdropAnim }]}>
-          <TouchableOpacity style={{ flex: 1 }} onPress={onClose} activeOpacity={1} />
-        </Animated.View>
+        <BlurView intensity={85} tint="dark" style={StyleSheet.absoluteFill} />
+        <TouchableOpacity style={StyleSheet.absoluteFill} onPress={onClose} activeOpacity={1} />
         <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
             <View style={styles.header}>
