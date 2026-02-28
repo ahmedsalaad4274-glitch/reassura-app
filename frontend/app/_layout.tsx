@@ -43,7 +43,7 @@ export default function RootLayout() {
     const inOnboarding = segments[0] === 'onboarding';
 
     if (!onboardingDone && !inOnboarding) {
-      router.replace('/onboarding/role');
+      router.replace('/onboarding/demo');
     }
   }, [onboardingDone, fontsLoaded, segments]);
 
