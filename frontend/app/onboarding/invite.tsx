@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Share, Platform }
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Clipboard from 'expo-clipboard';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
 
 const INVITE_CODE = 'RIN\u00B72026';
