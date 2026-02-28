@@ -241,7 +241,7 @@ export default function AddHomeScreen() {
                   style={styles.textInput}
                   value={formName}
                   onChangeText={setFormName}
-                  placeholder="Gym, Mum\u2019s house, School..."
+                  placeholder="Gym, Mum's house, School..."
                   placeholderTextColor="rgba(255,255,255,0.3)"
                 />
 
