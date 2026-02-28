@@ -599,16 +599,17 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: COLORS.backgroundCard,
+    backgroundColor: 'rgba(26,22,18,0.97)',
     borderTopLeftRadius: BORDER_RADIUS.xl,
     borderTopRightRadius: BORDER_RADIUS.xl,
     padding: SPACING.lg,
     paddingBottom: SPACING.xxl,
     minHeight: '70%',
+    borderTopWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   modalClose: {
     position: 'absolute',
