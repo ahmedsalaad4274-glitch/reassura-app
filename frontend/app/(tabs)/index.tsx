@@ -177,7 +177,7 @@ export default function HomeScreen() {
   const selectedCircle = circles[selectedCircleIndex];
   const circleFootprints = selectedCircle ? footprints.filter(f => selectedCircle.member_ids.includes(f.user_id)) : [];
   const latestFp = circleFootprints[0];
-  const userName = currentUser?.name?.split('_')[0] || 'You';
+  const userName = currentUser?.name || 'Rinade';
 
   if (isLoading) {
     return (<View style={s.loadingBox}><Ionicons name="leaf" size={48} color={COLORS.sageGreen} /><Text style={s.loadingText}>Loading...</Text></View>);
