@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Stack, Redirect, usePathname } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
@@ -13,12 +13,15 @@ import {
 } from '@expo-google-fonts/dm-sans';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../src/constants/theme';
 import { useAuthStore } from '../src/store/authStore';
 
 export default function RootLayout() {
   const { isAuthenticated, isOnboarded, loadFromStorage } = useAuthStore();
-  const pathname = usePathname();
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+  const router = useRouter();
+  const segments = useSegments();
 
   const [fontsLoaded] = useFonts({
     Fraunces_400Regular,
@@ -30,7 +33,19 @@ export default function RootLayout() {
 
   useEffect(() => {
     loadFromStorage();
+    AsyncStorage.getItem('reassura_onboarding_complete').then((val) => {
+      setOnboardingDone(val === 'true');
+    });
   }, []);
+
+  useEffect(() => {
+    if (onboardingDone === null || !fontsLoaded) return;
+    const inOnboarding = segments[0] === 'onboarding';
+
+    if (!onboardingDone && !inOnboarding) {
+      router.replace('/onboarding/role');
+    }
+  }, [onboardingDone, fontsLoaded, segments]);
 
   if (!fontsLoaded) {
     return (
