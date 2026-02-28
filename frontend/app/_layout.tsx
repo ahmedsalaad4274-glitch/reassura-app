@@ -27,6 +27,8 @@ export default function RootLayout() {
 
   const [fontsLoaded] = useFonts({
     Fraunces_400Regular,
+    Fraunces_400Regular_Italic,
+    Fraunces_600SemiBold,
     Fraunces_700Bold,
     DMSans_400Regular,
     DMSans_500Medium,
