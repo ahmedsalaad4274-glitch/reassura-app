@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { COLORS, FONTS, SPACING, GLASS_CARD } from '../constants/theme';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
