@@ -43,6 +43,8 @@ export default function InviteScreen() {
 
   const handleDone = async () => {
     await AsyncStorage.setItem('reassura_onboarding_complete', 'true');
+    // Small delay to ensure AsyncStorage write completes before navigation
+    await new Promise(r => setTimeout(r, 150));
     router.replace('/');
   };
 
