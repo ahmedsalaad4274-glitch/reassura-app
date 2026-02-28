@@ -47,43 +47,45 @@ export default function RoleScreen() {
       <Text style={shared.title}>How do you fit into your circle?</Text>
       <Text style={shared.subtitle}>Personalises your Reassura experience. Change anytime.</Text>
 
-      <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
-        {ROLES.map((role, idx) => {
-          const active = selected === idx;
-          return (
-            <View key={idx}>
-              <TouchableOpacity
-                style={[styles.card, active && styles.cardActive]}
-                onPress={() => setSelected(idx)}
-                activeOpacity={0.7}
-                data-testid={`role-card-${idx}`}
-              >
-                <Text style={styles.emoji}>{role.emoji}</Text>
-                <View style={styles.textCol}>
-                  <Text style={styles.name}>{role.name}</Text>
-                  <Text style={styles.desc}>{role.desc}</Text>
-                </View>
-                <View style={[styles.check, active && styles.checkActive]}>
-                  {active && <Text style={styles.tick}>{'\u2713'}</Text>}
-                </View>
-              </TouchableOpacity>
-              {idx === OTHER_IDX && active && (
-                <TextInput
-                  style={styles.customInput}
-                  value={customRole}
-                  onChangeText={setCustomRole}
-                  placeholder="Type your role..."
-                  placeholderTextColor="rgba(255,255,255,0.3)"
-                  autoFocus
-                  data-testid="custom-role-input"
-                />
-              )}
-            </View>
-          );
-        })}
+      <View style={styles.list}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+          {ROLES.map((role, idx) => {
+            const active = selected === idx;
+            return (
+              <View key={idx} style={{ flex: 1 }}>
+                <TouchableOpacity
+                  style={[styles.card, active && styles.cardActive]}
+                  onPress={() => setSelected(idx)}
+                  activeOpacity={0.7}
+                  data-testid={`role-card-${idx}`}
+                >
+                  <Text style={styles.emoji}>{role.emoji}</Text>
+                  <View style={styles.textCol}>
+                    <Text style={styles.name}>{role.name}</Text>
+                    <Text style={styles.desc}>{role.desc}</Text>
+                  </View>
+                  <View style={[styles.check, active && styles.checkActive]}>
+                    {active && <Text style={styles.tick}>{'\u2713'}</Text>}
+                  </View>
+                </TouchableOpacity>
+                {idx === OTHER_IDX && active && (
+                  <TextInput
+                    style={styles.customInput}
+                    value={customRole}
+                    onChangeText={setCustomRole}
+                    placeholder="Type your role..."
+                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    autoFocus
+                    data-testid="custom-role-input"
+                  />
+                )}
+              </View>
+            );
+          })}
+        </ScrollView>
 
         <OnboardingMessages />
-      </ScrollView>
+      </View>
 
       <TouchableOpacity onPress={handleContinue} disabled={!canContinue} activeOpacity={0.8} data-testid="role-continue-btn">
         <LinearGradient

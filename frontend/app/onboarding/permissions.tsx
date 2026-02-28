@@ -81,17 +81,7 @@ export default function PermissionsScreen() {
           </View>
         ))}
 
-        {/* Privacy promise */}
-        <View style={styles.promiseBox}>
-          <Text style={styles.promiseIcon}>{'\ud83c\udf3f'}</Text>
-          <Text style={styles.promiseText}>
-            We never sell your data. We never share it with advertisers.{'\n'}
-            Location data auto-deletes after 24 hours.{'\n'}
-            You can delete your account and all data in one tap.
-          </Text>
-        </View>
-
-        <OnboardingMessages />
+        <OnboardingMessages startIndex={1} />
       </ScrollView>
 
       {/* Allow button */}
