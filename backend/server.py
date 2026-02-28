@@ -199,7 +199,7 @@ async def seed_database():
     users = [
         {
             "id": "user-you",
-            "name": "You",
+            "name": "Rinade",
             "emoji": "👩🏾",
             "circle_ids": ["circle-family", "circle-friends"],
             "status": "home",
