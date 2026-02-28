@@ -28,21 +28,13 @@ export default function InviteScreen() {
 
   const handleMethod = async (action: string) => {
     if (action === 'copy') {
-      if (Platform.OS === 'web') {
-        try { await navigator.clipboard.writeText(INVITE_MSG); } catch {}
-      } else {
-        await Clipboard.setStringAsync(INVITE_MSG);
-      }
+      try { await navigator.clipboard.writeText(INVITE_MSG); } catch {}
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } else if (action === 'sms') {
-      if (Platform.OS === 'web') {
-        window.open(`sms:?body=${encodeURIComponent(INVITE_MSG)}`);
-      }
+      window.open?.(`sms:?body=${encodeURIComponent(INVITE_MSG)}`);
     } else if (action === 'whatsapp') {
-      if (Platform.OS === 'web') {
-        window.open(`https://wa.me/?text=${encodeURIComponent(INVITE_MSG)}`);
-      }
+      window.open?.(`https://wa.me/?text=${encodeURIComponent(INVITE_MSG)}`);
     } else if (action === 'qr') {
       setShowQR(!showQR);
     }
