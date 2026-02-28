@@ -107,3 +107,24 @@ export const OnboardingMessages: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { alignItems: 'center', paddingVertical: 16, gap: 12 },
+  bubble: {
+    borderWidth: 1,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 14,
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+    paddingVertical: 11,
+    paddingHorizontal: 13,
+    maxWidth: '92%',
+  },
+  msgText: { fontFamily: ONBOARDING.body, fontSize: 12, lineHeight: 18 },
+  bright: { color: 'rgba(255,255,255,0.85)' },
+  dim: { color: 'rgba(255,255,255,0.6)' },
+  dots: { flexDirection: 'row', gap: 5, alignItems: 'center' },
+  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: 'rgba(255,255,255,0.15)' },
+  dotActive: { width: 14, height: 5, borderRadius: 2.5, backgroundColor: '#7A9E87' },
+  signature: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 1.5, fontFamily: ONBOARDING.bodyMed },
+});
