@@ -11,61 +11,49 @@ Reassura is a private, invite-only peace-of-mind and family safety app. Users vo
 - Background: `#1A1612` (warm dark)
 - Cards: `rgba(255,255,255,0.04)` glassmorphism + `rgba(255,255,255,0.1)` borders
 - Primary: Sage green `#7A9E87` / Secondary: Gold `#C9A84C`
-- Typography: Fraunces headings, DM Sans body
+- Typography: Fraunces headings (700Bold, 400Regular_Italic, 600SemiBold), DM Sans body
 - All modals/popups/sidebar: expo-blur intensity 85, tint dark
 - Sheet backgrounds: solid `rgba(26,22,18,0.97)`
 - User name: Rinade
 
 ## Implemented Features
 
-### Phase 1 — MVP
+### Phase 1-4: MVP through Premium UI + Safety Suite
 - [x] 5 tab screens, backend API, MongoDB, mock data
-
-### Phase 2 — Feature Update
-- [x] Auth/Onboarding, Sidebar, Profile Upload, Demo Mode, Map Pins, Saved Places, Real-Time Updates
-
-### Phase 3 — Safety Features
+- [x] Auth/Onboarding, Sidebar, Profile Upload, Demo Mode, Map Pins, Saved Places
 - [x] Check-in Request, Circle Mood, Quiet Hours, My Places editor
+- [x] Premium Glassmorphism UI, I'm Home Button, Quick Actions, Night Check, Safe Walk, Peace Streaks, Smart Emergency Detection
 
-### Phase 4 — Premium UI + Safety Suite
-- [x] Premium Glassmorphism UI — All cards, modals, sidebar use transparent glass style
-- [x] I'm Home Button — Sage green gradient hero card with pulsing ring
-- [x] Quick Actions Row — Night Check, Safe Walk, Quick Check In with descriptions
-- [x] Night Check Screen — Starfield animation, moon, gold "Send Goodnight" button
-- [x] Safe Walk Mode — Destination, ETA, progress tracking, arrival celebration
-- [x] Peace Streaks — Fire emoji + day counter
-- [x] Smart Emergency Detection — Simulated prompt, 3-option response
+### Phase 5: Premium UI Enhancements (Feb 2026)
+- [x] Top Nav Bar, Enhanced I'm Home Hero, Redesigned Quick Actions
+- [x] Latest Footprint Widget, Customise Mode, Enhanced Profile Popup, Personal Greeting, Global Blur
 
-### Phase 5 — Premium UI Enhancements (Feb 2026)
-- [x] **Top Nav Bar** — Bell icon + styled Edit pill button
-- [x] **Enhanced I'm Home Hero Card** — Larger gradient card, pulsing animated ring, footer with circle count
-- [x] **Redesigned Quick Actions** — Larger cards with descriptions (Safe Walk, Night Check, Check In)
-- [x] **Latest Footprint Widget** — Card showing most recent circle member update
-- [x] **Home Screen Customise Mode** — Edit pill toggles widget visibility, saved to AsyncStorage
-- [x] **Enhanced Profile Popup** — Blur background, Reassura Insight card, recent activity, quick reply chips
-- [x] **Personal Greeting** — Time-aware greeting ("Good afternoon, Rinade")
-- [x] **Global Blur** — expo-blur intensity 85 tint dark on every modal, popup, sheet, sidebar
+### Phase 6: Onboarding Flow (Feb 2026)
+- [x] Demo Screen (3 slides) with swipeable intro
+- [x] Role Screen — 6 roles + custom input
+- [x] Avatar Screen — emoji picker + photo upload + map pin preview
+- [x] Permissions Screen — enlarged UI for 3 permissions
+- [x] Add Home Screen — 3 location slots (Home/sage, Work/blue, Custom/amber)
+- [x] MapLocationPicker — reusable dark map with colored pins
+- [x] Invite Screen — invite code, 4 share methods
+- [x] OnboardingMessages — rotating privacy messages on all 6 screens
+- [x] Onboarding State (Zustand + AsyncStorage) — flag persistence, skip on re-visit
 
-### Phase 6 — Onboarding Flow (Feb 2026)
-- [x] **Demo Screen (3 slides)** — Swipeable intro: I'm Home, Safe Walk, Circle Updates with mini phone previews
-- [x] **Role Screen** — 6 role options + custom "Other" input
-- [x] **Avatar Screen** — Emoji picker (12 options) + custom emoji input + photo upload + live map pin preview
-- [x] **Permissions Screen** — Enlarged UI for Location, Notifications, Bluetooth. Privacy promise card
-- [x] **Add Home Screen** — 3 location slots: Home (sage), Work (blue), Custom place (amber)
-- [x] **MapLocationPicker Component** — Reusable high-fidelity dark map with colored pins (sage/blue/amber), pan & zoom, search, neighbourhood display
-- [x] **Map Location Integration** — Tapping any slot navigates to map picker, saving returns to location list with flash animation
-- [x] **Invite Screen** — Invite code card, 4 share methods (iMessage, WhatsApp, QR, Copy), consent note
-- [x] **OnboardingMessages Component** — Rotating privacy-focused animated messages visible on ALL 6 screens
-- [x] **Onboarding State Management** — Zustand store + AsyncStorage persistence. Completing onboarding flags user and loads main app. Skips on subsequent visits
-- [x] **E2E Flow**: Demo → Role → Avatar → Permissions → Add Locations → Invite → Main App
+### Phase 7: Visual Polish (Feb 2026)
+- [x] **Glow bubble style** — sage/blue shadow glow on message bubbles, asymmetric border radius
+- [x] **Fraunces italic body text** — editorial italic for bubble body, SemiBold upright for highlights
+- [x] **Gradient circle icons** — LinearGradient circles for demo feature card emojis (44px)
+- [x] **Signature redesign** — horizontal rules + centered leaf + "Reassura" + tagline
+- [x] **Role cards flex fill** — cards expand to fill available space between subtitle and messages
+- [x] **Demo phone enlarged** — 170x260 from 130x220
+- [x] **Permissions dedup** — removed privacy promise box, startIndex=1 for brand message first
+- [x] **Font loading** — added Fraunces_400Regular_Italic and Fraunces_600SemiBold to root layout
 
 ## API Endpoints
 - GET /api/users, /api/users/current/me
-- PUT /api/users/{id}/profile (mood, quiet_hours, profile_picture)
-- PUT /api/users/{id}/status (auto-emoji, message fallback)
+- PUT /api/users/{id}/profile, /api/users/{id}/status
 - GET /api/circles, /api/footprints, /api/travel, /api/notifications
-- POST /api/checkin/request, /api/checkin/respond
-- POST /api/emergency
+- POST /api/checkin/request, /api/checkin/respond, /api/emergency
 
 ## Future Backlog
 - P1: Real auth (JWT/OAuth), push notifications
