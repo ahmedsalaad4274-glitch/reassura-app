@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
+import { OnboardingMessages } from '../../src/components/OnboardingMessages';
 
 const OTHER_IDX = 5;
 

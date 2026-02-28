@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
+import { OnboardingMessages } from '../../src/components/OnboardingMessages';
 
 const EMOJIS = [
   '\ud83d\udc69\ud83c\udffe','\ud83d\udc69\ud83c\udfff','\ud83d\udc69\ud83c\udffd','\ud83d\udc69\ud83c\udffc',

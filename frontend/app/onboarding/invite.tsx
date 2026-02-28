@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
+import { OnboardingMessages } from '../../src/components/OnboardingMessages';
 
 const INVITE_CODE = 'RIN\u00B72026';
 const INVITE_MSG = 'I\u2019m using Reassura to stay connected with my circle \ud83c\udf3f\n\nJoin using my code: RIN\u00B72026\nDownload: reassura.app';

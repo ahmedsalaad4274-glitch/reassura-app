@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from '
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
+import { OnboardingMessages } from '../../src/components/OnboardingMessages';
 
 const PERMISSIONS = [
   {
