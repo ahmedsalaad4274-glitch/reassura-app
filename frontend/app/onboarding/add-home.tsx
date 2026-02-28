@@ -115,9 +115,13 @@ export default function AddHomeScreen() {
 
   // Default slots that aren't saved yet
   const defaultSlots = [
-    { emoji: '\ud83c\udfe0', label: 'Home', key: 'home' },
-    { emoji: '\ud83d\udcbc', label: 'Work', key: 'work' },
+    { emoji: '\ud83c\udfe0', label: 'Home', key: 'home', pinColour: 'sage' },
+    { emoji: '\ud83d\udcbc', label: 'Work', key: 'work', pinColour: 'blue' },
   ];
+
+  const openMapForSlot = (slotKey: string, emoji: string, label: string, pinColour: string) => {
+    router.push({ pathname: '/onboarding/add-location', params: { slotKey, slotEmoji: emoji, slotLabel: label, pinColour } });
+  };
 
   return (
     <View style={[shared.container, shared.safeTop]}>
