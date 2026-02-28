@@ -201,8 +201,8 @@ export default function AddHomeScreen() {
           );
         })}
 
-        {/* Custom saved places */}
-        {places.filter(p => p.key !== 'home' && p.key !== 'work').map((p, i) => {
+        {/* Custom saved places (beyond defaults) */}
+        {places.filter(p => !['home', 'work', 'custom'].includes(p.key)).map((p, i) => {
           const realIdx = places.indexOf(p);
           const isFlash = flashIdx === realIdx;
           return (
@@ -218,14 +218,6 @@ export default function AddHomeScreen() {
             </Animated.View>
           );
         })}
-
-        {/* + Add another place */}
-        {places.filter(p => p.key !== 'home' && p.key !== 'work').length < 1 && (
-          <TouchableOpacity style={styles.addCard} onPress={() => openAddModal()}>
-            <Text style={styles.addCardPlus}>+</Text>
-            <Text style={styles.addCardText}>Add another place</Text>
-          </TouchableOpacity>
-        )}
 
         {/* Info card */}
         <View style={styles.infoCard}>
