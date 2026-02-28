@@ -19,8 +19,8 @@ import { useAuthStore } from '../src/store/authStore';
 import { useOnboardingStore } from '../src/store/onboardingStore';
 
 export default function RootLayout() {
-  const { isAuthenticated, isOnboarded, loadFromStorage } = useAuthStore();
-  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+  const { loadFromStorage } = useAuthStore();
+  const { isComplete: onboardingDone, loadFromStorage: loadOnboarding } = useOnboardingStore();
   const router = useRouter();
   const segments = useSegments();
 
@@ -34,14 +34,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     loadFromStorage();
+    loadOnboarding();
   }, []);
-
-  // Re-check onboarding flag whenever segments change (e.g. after completing onboarding)
-  useEffect(() => {
-    AsyncStorage.getItem('reassura_onboarding_complete').then((val) => {
-      setOnboardingDone(val === 'true');
-    });
-  }, [segments]);
 
   useEffect(() => {
     if (onboardingDone === null || !fontsLoaded) return;
