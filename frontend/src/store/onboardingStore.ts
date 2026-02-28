@@ -11,10 +11,10 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   isComplete: null,
   setComplete: (value) => {
     set({ isComplete: value });
-    AsyncStorage.setItem('reassura_onboarding_complete', value ? 'true' : 'false');
+    AsyncStorage.setItem('reassura_onboarding_v2', value ? 'true' : 'false');
   },
   loadFromStorage: async () => {
-    const val = await AsyncStorage.getItem('reassura_onboarding_complete');
+    const val = await AsyncStorage.getItem('reassura_onboarding_v2');
     set({ isComplete: val === 'true' });
   },
 }));
