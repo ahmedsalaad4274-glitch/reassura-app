@@ -217,20 +217,31 @@ export default function HomeScreen() {
 
   const renderImHome = () => (
     <Animated.View style={{ transform: [{ scale: homeScale }] }}>
-      <TouchableOpacity onPress={handleImHome} disabled={imHomePressed} activeOpacity={0.85}>
-        <LinearGradient colors={imHomePressed ? ['#2A2A2A', '#333', '#444'] : ['#243D30', '#3D6B50', '#6A9478']}
+      <TouchableOpacity onPress={handleImHome} disabled={imHomePressed} activeOpacity={0.85} data-testid="im-home-button">
+        <LinearGradient colors={imHomePressed ? ['#2A2A2A', '#333', '#3A3A3A'] : ['#1E3A2B', '#2C5740', '#3D6B50', '#5A8A6A']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.imHomeGrad}>
-          <Text style={s.imHomeIcon}>{imHomePressed ? '\u2713' : '\u{1F3E0}'}</Text>
-          <View style={s.imHomeRow}>
-            <View>
-              <Text style={s.imHomeTitle}>{imHomePressed ? 'Home' : "I'm Home"}</Text>
-              <Text style={s.imHomeSub}>{imHomePressed ? 'Just now · your circle knows' : 'Tap to let your circle know'}</Text>
+          {/* Outer pulsing ring */}
+          {!imHomePressed && (
+            <Animated.View style={[s.imHomePulseOuter, { opacity: outerRingOpacity, transform: [{ scale: outerRingScale }] }]} />
+          )}
+          <View style={s.imHomeContent}>
+            <View style={s.imHomeLeft}>
+              <Text style={s.imHomeIcon}>{imHomePressed ? '\u2705' : '\u{1F3E0}'}</Text>
+              <View>
+                <Text style={s.imHomeTitle}>{imHomePressed ? "You're Home" : "I'm Home"}</Text>
+                <Text style={s.imHomeSub}>{imHomePressed ? 'Just now \u00B7 your circle knows you\u2019re safe' : 'One tap to let everyone know you\u2019re safe'}</Text>
+              </View>
             </View>
             {!imHomePressed && (
               <Animated.View style={[s.tapRing, { transform: [{ scale: tapRingScale }], opacity: tapRingOpacity }]}>
-                <Text style={s.tapArrow}>{'\u2192'}</Text>
+                <Ionicons name="arrow-forward" size={16} color={COLORS.white} />
               </Animated.View>
             )}
+          </View>
+          {/* Bottom context line */}
+          <View style={s.imHomeFooter}>
+            <Animated.View style={[s.imHomeDot, { opacity: statusDotAnim }]} />
+            <Text style={s.imHomeFooterText}>{imHomePressed ? 'Confirmed \u00B7 everyone is accounted for' : `${circles.length} circle${circles.length !== 1 ? 's' : ''} will be notified`}</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
