@@ -66,8 +66,8 @@ export default function PermissionsScreen() {
       {/* Hero emoji */}
       <Text style={styles.hero}>{'\ud83c\udf3f'}</Text>
 
-      <Text style={[shared.title, { textAlign: 'center' }]}>What Reassura needs from you</Text>
-      <Text style={[shared.subtitle, { textAlign: 'center' }]}>Only the minimum. We{'\u2019'}ll tell you exactly why {'\u2014'} no small print.</Text>
+      <Text style={[shared.title, { textAlign: 'center', fontSize: 22 }]}>What Reassura needs from you</Text>
+      <Text style={[shared.subtitle, { textAlign: 'center', color: 'rgba(255,255,255,0.6)' }]}>Only the minimum. We{'\u2019'}ll tell you exactly why {'\u2014'} no small print.</Text>
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Permission cards */}
