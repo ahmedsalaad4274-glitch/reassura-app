@@ -53,19 +53,19 @@ export default function Demo3Screen() {
 
             <View style={st.familyCol}>
               <View style={st.familyItem}>
-                <LinearGradient colors={['#2A3D70', '#4A6AAA']} style={st.familyAvatar}>
+                <LinearGradient colors={['#2A3D70', '#4A6AAA']} style={[st.familyAvatar, { borderColor: 'rgba(74,106,170,0.5)' }]}>
                   <Text style={{ fontSize: 14 }}>{'\uD83D\uDC69\uD83C\uDFFE'}</Text>
                 </LinearGradient>
                 <Text style={st.familyLabel}>Mum</Text>
               </View>
               <View style={st.familyItem}>
-                <LinearGradient colors={['#8A6A20', '#C9A84C']} style={st.familyAvatar}>
+                <LinearGradient colors={['#8A6A20', '#C9A84C']} style={[st.familyAvatar, { borderColor: 'rgba(201,168,76,0.5)' }]}>
                   <Text style={{ fontSize: 14 }}>{'\uD83D\uDC68\uD83C\uDFFE'}</Text>
                 </LinearGradient>
                 <Text style={st.familyLabel}>Dad</Text>
               </View>
               <View style={st.familyItem}>
-                <LinearGradient colors={['#3D4A2A', '#6A8050']} style={st.familyAvatar}>
+                <LinearGradient colors={['#3D4A2A', '#6A8050']} style={[st.familyAvatar, { borderColor: 'rgba(100,130,70,0.5)' }]}>
                   <Text style={{ fontSize: 14 }}>{'\uD83E\uDDD1\uD83C\uDFFE'}</Text>
                 </LinearGradient>
                 <Text style={st.familyLabel}>Jamie</Text>
