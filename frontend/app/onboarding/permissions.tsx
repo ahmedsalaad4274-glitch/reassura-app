@@ -1,31 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
-import { OnboardingMessages } from '../../src/components/OnboardingMessages';
+import OnboardingMessages from '../../src/components/OnboardingMessages';
+import PrimaryButton from '../../src/components/PrimaryButton';
+import FeatureIcon from '../../src/components/FeatureIcon';
 
 const PERMISSIONS = [
   {
     icon: '\ud83d\udccd',
     name: 'Location \u00B7 While Using App only',
     desc: 'Only when you choose to share \u2014 during Safe Walk or check-in. Never tracked in the background. You control this completely.',
-    bg: 'rgba(122,158,135,0.07)',
-    border: 'rgba(122,158,135,0.17)',
+    iconColor: 'sage' as const,
   },
   {
     icon: '\ud83d\udd14',
     name: 'Notifications',
     desc: 'For circle updates, safe arrivals and emergency alerts only. Never marketing. Never ads.',
-    bg: 'rgba(61,90,153,0.07)',
-    border: 'rgba(61,90,153,0.17)',
+    iconColor: 'blue' as const,
   },
   {
     icon: '\ud83d\udeab',
     name: 'Bluetooth \u00B7 Not requested',
     desc: 'We don\u2019t need it. We will never ask for it.',
-    bg: 'rgba(255,255,255,0.02)',
-    border: 'rgba(255,255,255,0.07)',
+    iconColor: 'neutral' as const,
   },
 ];
 
@@ -33,7 +31,6 @@ export default function PermissionsScreen() {
   const router = useRouter();
 
   const handleAllow = async () => {
-    // On native, request permissions here. On web, skip gracefully.
     if (Platform.OS !== 'web') {
       try {
         const Location = require('expo-location');
@@ -63,35 +60,26 @@ export default function PermissionsScreen() {
         ))}
       </View>
 
-      {/* Hero emoji */}
-      <Text style={styles.hero}>{'\ud83c\udf3f'}</Text>
-
-      <Text style={[shared.title, { textAlign: 'center', fontSize: 22 }]}>What Reassura needs from you</Text>
-      <Text style={[shared.subtitle, { textAlign: 'center', color: 'rgba(255,255,255,0.6)' }]}>Only the minimum. We{'\u2019'}ll tell you exactly why {'\u2014'} no small print.</Text>
+      <Text style={[shared.title, { textAlign: 'center' }]}>What Reassura needs from you</Text>
+      <Text style={[shared.subtitle, { textAlign: 'center' }]}>Only the minimum. We{'\u2019'}ll tell you exactly why {'\u2014'} no small print.</Text>
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {/* Permission cards */}
         {PERMISSIONS.map((p, idx) => (
-          <View key={idx} style={[styles.permCard, { backgroundColor: p.bg, borderColor: p.border }]} data-testid={`perm-card-${idx}`}>
-            <Text style={styles.permIcon}>{p.icon}</Text>
+          <View key={idx} style={styles.permCard} data-testid={`perm-card-${idx}`}>
+            <FeatureIcon emoji={p.icon} color={p.iconColor} size={36} delay={idx * 200} />
             <View style={{ flex: 1 }}>
               <Text style={styles.permName}>{p.name}</Text>
               <Text style={styles.permDesc}>{p.desc}</Text>
             </View>
           </View>
         ))}
-
-        <OnboardingMessages startIndex={1} />
       </ScrollView>
 
-      {/* Allow button */}
-      <TouchableOpacity onPress={handleAllow} activeOpacity={0.8} data-testid="permissions-allow-btn">
-        <LinearGradient colors={['#5A8A6A', '#7A9E87']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={shared.btnPrimary}>
-          <Text style={shared.btnPrimaryText}>Allow location & notifications {'\u2192'}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-
-      {/* Skip link */}
+      {/* Standardized footer: Messages > Button > Skip */}
+      <OnboardingMessages startIndex={3} />
+      <View data-testid="permissions-allow-btn">
+        <PrimaryButton label={'Allow location & notifications \u2192'} onPress={handleAllow} color="sage" />
+      </View>
       <TouchableOpacity style={shared.btnGhost} onPress={handleSkip} data-testid="permissions-skip-btn">
         <Text style={shared.btnGhostText}>Skip {'\u2014'} set up later in settings</Text>
       </TouchableOpacity>
@@ -100,18 +88,14 @@ export default function PermissionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  hero: { fontSize: 40, textAlign: 'center', marginBottom: 10 },
   permCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderRadius: 13,
-    borderWidth: 1.5,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    marginBottom: 8,
-    gap: 11,
+    flexDirection: 'row', alignItems: 'flex-start',
+    borderRadius: 13, borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    paddingVertical: 14, paddingHorizontal: 14,
+    marginBottom: 8, gap: 11,
   },
-  permIcon: { fontSize: 22, marginTop: 1 },
   permName: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13, marginBottom: 3 },
   permDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.55)', fontSize: 12, lineHeight: 18 },
 });

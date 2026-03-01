@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
-import { OnboardingMessages } from '../../src/components/OnboardingMessages';
+import OnboardingMessages from '../../src/components/OnboardingMessages';
+import PrimaryButton from '../../src/components/PrimaryButton';
 
 const OTHER_IDX = 5;
 
@@ -47,62 +47,52 @@ export default function RoleScreen() {
       <Text style={shared.title}>How do you fit into your circle?</Text>
       <Text style={shared.subtitle}>Personalises your Reassura experience. Change anytime.</Text>
 
-      <View style={styles.list}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-          {ROLES.map((role, idx) => {
-            const active = selected === idx;
-            return (
-              <View key={idx} style={{ flex: 1 }}>
-                <TouchableOpacity
-                  style={[styles.card, active && styles.cardActive]}
-                  onPress={() => setSelected(idx)}
-                  activeOpacity={0.7}
-                  data-testid={`role-card-${idx}`}
-                >
-                  <Text style={styles.emoji}>{role.emoji}</Text>
-                  <View style={styles.textCol}>
-                    <Text style={styles.name}>{role.name}</Text>
-                    <Text style={styles.desc}>{role.desc}</Text>
-                  </View>
-                  <View style={[styles.check, active && styles.checkActive]}>
-                    {active && <Text style={styles.tick}>{'\u2713'}</Text>}
-                  </View>
-                </TouchableOpacity>
-                {idx === OTHER_IDX && active && (
-                  <TextInput
-                    style={styles.customInput}
-                    value={customRole}
-                    onChangeText={setCustomRole}
-                    placeholder="Type your role..."
-                    placeholderTextColor="rgba(255,255,255,0.3)"
-                    autoFocus
-                    data-testid="custom-role-input"
-                  />
-                )}
-              </View>
-            );
-          })}
-        </ScrollView>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+        {ROLES.map((role, idx) => {
+          const active = selected === idx;
+          return (
+            <View key={idx} style={{ flex: 1 }}>
+              <TouchableOpacity
+                style={[styles.card, active && styles.cardActive]}
+                onPress={() => setSelected(idx)}
+                activeOpacity={0.7}
+                data-testid={`role-card-${idx}`}
+              >
+                <Text style={styles.emoji}>{role.emoji}</Text>
+                <View style={styles.textCol}>
+                  <Text style={styles.name}>{role.name}</Text>
+                  <Text style={styles.desc}>{role.desc}</Text>
+                </View>
+                <View style={[styles.check, active && styles.checkActive]}>
+                  {active && <Text style={styles.tick}>{'\u2713'}</Text>}
+                </View>
+              </TouchableOpacity>
+              {idx === OTHER_IDX && active && (
+                <TextInput
+                  style={styles.customInput}
+                  value={customRole}
+                  onChangeText={setCustomRole}
+                  placeholder="Type your role..."
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  autoFocus
+                  data-testid="custom-role-input"
+                />
+              )}
+            </View>
+          );
+        })}
+      </ScrollView>
 
-        <OnboardingMessages />
+      {/* Standardized footer: Messages > Button */}
+      <OnboardingMessages startIndex={1} />
+      <View data-testid="role-continue-btn">
+        <PrimaryButton label={'Continue \u2192'} onPress={handleContinue} color="sage" disabled={!canContinue} />
       </View>
-
-      <TouchableOpacity onPress={handleContinue} disabled={!canContinue} activeOpacity={0.8} data-testid="role-continue-btn">
-        <LinearGradient
-          colors={canContinue ? ['#5A8A6A', '#7A9E87'] : ['#333', '#444']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[shared.btnPrimary, !canContinue && { opacity: 0.4 }]}
-        >
-          <Text style={shared.btnPrimaryText}>Continue {'\u2192'}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { flex: 1, marginBottom: 12 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -123,30 +113,17 @@ const styles = StyleSheet.create({
   name: { fontFamily: ONBOARDING.bodyBold, color: ONBOARDING.white, fontSize: 13 },
   desc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.65)', fontSize: 12, marginTop: 1 },
   check: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 18, height: 18, borderRadius: 9,
+    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center', justifyContent: 'center',
   },
-  checkActive: {
-    backgroundColor: ONBOARDING.sage,
-    borderColor: ONBOARDING.sage,
-  },
+  checkActive: { backgroundColor: ONBOARDING.sage, borderColor: ONBOARDING.sage },
   tick: { color: ONBOARDING.white, fontSize: 11, fontWeight: '700' },
   customInput: {
     backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.12)',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginBottom: 8,
-    marginTop: -2,
-    fontFamily: ONBOARDING.body,
-    color: ONBOARDING.white,
-    fontSize: 12,
+    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 10, paddingVertical: 10, paddingHorizontal: 14,
+    marginBottom: 8, marginTop: -2,
+    fontFamily: ONBOARDING.body, color: ONBOARDING.white, fontSize: 12,
   },
 });
