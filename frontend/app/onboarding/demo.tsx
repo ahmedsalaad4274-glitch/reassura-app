@@ -158,23 +158,25 @@ export default function DemoScreen() {
         ))}
       </View>
 
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}>
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideX }], alignItems: 'center' }}>
-          <Preview />
-        </Animated.View>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideX }], alignItems: 'center' }}>
+            <Preview />
+          </Animated.View>
 
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideX }] }}>
-          <Text style={shared.title}>{current.heading}</Text>
-          <Text style={shared.subtitle}>{current.subtitle}</Text>
+          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideX }] }}>
+            <Text style={shared.title}>{current.heading}</Text>
+            <Text style={shared.subtitle}>{current.subtitle}</Text>
 
-          <View style={s.featureCard}>
-            <FeatureIcon emoji={current.card.emoji} color={current.card.iconColor} size={44} />
-            <View style={{ flex: 1 }}>
-              <Text style={s.featureName}>{current.card.name}</Text>
-              <Text style={s.featureDesc}>{current.card.desc}</Text>
+            <View style={s.featureCard}>
+              <FeatureIcon emoji={current.card.emoji} color={current.card.iconColor} size={44} />
+              <View style={{ flex: 1 }}>
+                <Text style={s.featureName}>{current.card.name}</Text>
+                <Text style={s.featureDesc}>{current.card.desc}</Text>
+              </View>
             </View>
-          </View>
-        </Animated.View>
+          </Animated.View>
+        </View>
       </ScrollView>
 
       {/* Standardized footer: Messages > Button > Skip */}
