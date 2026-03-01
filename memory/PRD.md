@@ -39,15 +39,16 @@ Reassura is a private, invite-only peace-of-mind and family safety app. Users vo
 - [x] OnboardingMessages — rotating privacy messages on all 6 screens
 - [x] Onboarding State (Zustand + AsyncStorage) — flag persistence, skip on re-visit
 
-### Phase 7: Visual Polish (Feb 2026)
-- [x] **Glow bubble style** — sage/blue shadow glow on message bubbles, asymmetric border radius
-- [x] **Fraunces italic body text** — editorial italic for bubble body, SemiBold upright for highlights
-- [x] **Gradient circle icons** — LinearGradient circles for demo feature card emojis (44px)
-- [x] **Signature redesign** — horizontal rules + centered leaf + "Reassura" + tagline
-- [x] **Role cards flex fill** — cards expand to fill available space between subtitle and messages
-- [x] **Demo phone enlarged** — 170x260 from 130x220
-- [x] **Permissions dedup** — removed privacy promise box, startIndex=1 for brand message first
-- [x] **Font loading** — added Fraunces_400Regular_Italic and Fraunces_600SemiBold to root layout
+### Phase 7: Visual Polish — COMPLETE (Mar 2026)
+- [x] **PrimaryButton component** — 3D animated pill button with shimmer, pulse, glow effects. Supports sage/blue/amber variants. Integrated on all 6 onboarding screens.
+- [x] **OnboardingMessages component** — Fully replaced with new design: rotating messages, active dot indicators, built-in Reassura signature. Unique startIndex per screen (0-4).
+- [x] **FeatureIcon component** — 3D rounded-square floating icons. Used on demo screen (feature cards) and permissions screen (permission icons).
+- [x] **Font size unification** — Strict consistent hierarchy: shared.title (19px Fraunces Bold), shared.subtitle (13px DM Sans), card names (13px Bold), descriptions (12px Regular).
+- [x] **Standardized footer layout** — All screens: OnboardingMessages → PrimaryButton → Skip link.
+- [x] **role.tsx flex fix** — Cards use flex:1 to fill available vertical space, eliminating dead space.
+- [x] **permissions.tsx cleanup** — Hardcoded privacy box removed (duplicate of OnboardingMessages content).
+- [x] **demo.tsx phone sizing** — Mini phone preview adjusted to 160x195.
+- [x] **avatar.tsx dark map** — Map preview changed from light (#E4E0D6) to dark (#1E1A16) theme with muted road/park colors.
 
 ## API Endpoints
 - GET /api/users, /api/users/current/me
