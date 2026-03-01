@@ -37,11 +37,11 @@ Reassura is a private, invite-only peace-of-mind and family safety app. Users vo
 - [x] OnboardingMessages — rotating messages, dot indicators, Reassura signature, borderRadius: 16
 - [x] FeatureIcon — 3D rounded-square floating icons on demo + permissions (size 44, staggered delays)
 - [x] Font size unification (shared.title 19px, shared.subtitle 13px, card names 13px, descriptions 12px)
-- [x] Standardized footer layout (Messages → Button → Skip) on all screens
+- [x] Standardized footer layout (Messages > Button > Skip) on all screens
 - [x] role.tsx flex fix, permissions.tsx cleanup, demo.tsx phone 160x195, avatar.tsx dark map
 
 ### Phase 8: Final Layout Polish — COMPLETE (Mar 2026)
-- [x] Forest gradient backgrounds per demo slide (sage→blue→amber) and permissions screen
+- [x] Forest gradient backgrounds per demo slide (sage/blue/amber) and permissions screen
 - [x] Dead space elimination with flex:1 + justifyContent: space-between + paddingHorizontal: 16
 - [x] Ambient radial glow behind phone previews (colour-matched per slide: sage/blue/amber)
 - [x] Feature card borders tinted to match slide colour
@@ -49,6 +49,15 @@ Reassura is a private, invite-only peace-of-mind and family safety app. Users vo
 - [x] Permissions: cards fill space with flex:1 column layout
 - [x] Permissions: ambient sage glow behind heading area
 - [x] OnboardingMessages bubble: all corners borderRadius: 16 (global fix)
+
+### Phase 9: Interactive Onboarding — COMPLETE (Mar 2026)
+- [x] Slide 1 "I'm Home": 120x120 hero button (borderRadius 32), floating animation (3.5s loop), pulsing "Tap it" prompt, ripple rings on tap, notification toast ("Mum is home safe"), success card ("Your circle just got notified"), heading changes to "That's what Reassura feels like."
+- [x] Slide 2 "Safe Walk": 200px map with SVG route (react-native-svg), continuously animated walking dot, tap triggers arrival state, badge changes to "Arrived safely", toast ("Jamie arrived home safely"), success card ("Your circle just breathed out")
+- [x] Slide 3 "Circle Feed": Three feed items with staggered fade-in (0/500/1000ms), amber-tinted borders, no interaction required
+- [x] Heading fontSize 24, subtitle fontSize 14, minimum 13px throughout
+- [x] Per-slide forest gradients (sage/blue/amber), flex:1 + space-evenly layout
+- [x] PrimaryButton color prop: sage/blue/amber gradient backgrounds
+- [x] Permissions screen: forest gradient, FeatureIcon 3D components, flex:1 cards
 
 ## Future Backlog
 - P1: Real auth (JWT/OAuth), push notifications
