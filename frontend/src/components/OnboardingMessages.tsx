@@ -106,8 +106,7 @@ const styles = StyleSheet.create({
   bubble: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 8,
     padding: 12, paddingHorizontal: 14,
-    borderTopLeftRadius: 4, borderTopRightRadius: 14,
-    borderBottomLeftRadius: 14, borderBottomRightRadius: 14,
+    borderRadius: 16,
     marginBottom: 8,
   },
   sageBubble: {

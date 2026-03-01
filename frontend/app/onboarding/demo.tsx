@@ -96,7 +96,7 @@ const Slide3Preview = () => {
   );
 };
 
-// ── Feature cards data ──
+// ── Slide data with per-slide colours ──
 const SLIDES = [
   {
     preview: Slide1Preview,
@@ -104,6 +104,10 @@ const SLIDES = [
     subtitle: "The I'm Home button tells your whole circle instantly \u2014 no message needed.",
     card: { emoji: '\ud83c\udfe0', name: "I'm Home", desc: 'One tap \u00B7 your circle gets a notification instantly', iconColor: 'sage' as const },
     btn: 'Next \u2192',
+    gradient: ['#0D1F12', '#0B1810', '#0A0806'],
+    glowColor: 'rgba(122,158,135,0.14)',
+    cardBorder: 'rgba(122,158,135,0.22)',
+    cardBg: 'rgba(122,158,135,0.07)',
   },
   {
     preview: Slide2Preview,
@@ -111,6 +115,10 @@ const SLIDES = [
     subtitle: 'Safe Walk shares your live location until you arrive. Your circle watches in real time.',
     card: { emoji: '\ud83d\udeb6', name: 'Safe Walk', desc: 'Live location \u00B7 auto-stops when you arrive', iconColor: 'blue' as const },
     btn: 'Next \u2192',
+    gradient: ['#0D1220', '#0A0F1A', '#0A0806'],
+    glowColor: 'rgba(61,90,153,0.14)',
+    cardBorder: 'rgba(61,90,153,0.22)',
+    cardBg: 'rgba(61,90,153,0.07)',
   },
   {
     preview: Slide3Preview,
@@ -118,6 +126,10 @@ const SLIDES = [
     subtitle: "See live updates from your circle. Know when they arrive, when they're on the way, when they're safe.",
     card: { emoji: '\ud83d\udc65', name: 'Circle updates', desc: 'Real time \u00B7 warm notifications \u00B7 no anxiety', iconColor: 'amber' as const },
     btn: "Let's get started \ud83c\udf3f",
+    gradient: ['#1A1408', '#141008', '#0A0806'],
+    glowColor: 'rgba(201,168,76,0.12)',
+    cardBorder: 'rgba(201,168,76,0.22)',
+    cardBg: 'rgba(201,168,76,0.07)',
   },
 ];
 
@@ -151,7 +163,11 @@ export default function DemoScreen() {
   const Preview = current.preview;
 
   return (
-    <View style={[shared.container, shared.safeTop]}>
+    <LinearGradient
+      colors={current.gradient}
+      locations={[0, 0.4, 0.65]}
+      style={[shared.container, shared.safeTop]}
+    >
       <View style={shared.progressRow}>
         {[0, 1, 2].map(i => (
           <View key={i} style={i === slide ? shared.progressDotActive : shared.progressDot} />
@@ -159,16 +175,23 @@ export default function DemoScreen() {
       </View>
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+        <View style={{ flex: 1, justifyContent: 'space-between', paddingHorizontal: 16 }}>
+          {/* Phone preview with ambient glow */}
           <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideX }], alignItems: 'center' }}>
-            <Preview />
+            <View style={s.phoneWrap}>
+              <View style={[s.phoneGlow, { backgroundColor: current.glowColor }]} />
+              <View style={{ zIndex: 1 }}>
+                <Preview />
+              </View>
+            </View>
           </Animated.View>
 
+          {/* Heading + feature card */}
           <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideX }] }}>
             <Text style={shared.title}>{current.heading}</Text>
             <Text style={shared.subtitle}>{current.subtitle}</Text>
 
-            <View style={s.featureCard}>
+            <View style={[s.featureCard, { borderColor: current.cardBorder, backgroundColor: current.cardBg }]}>
               <FeatureIcon emoji={current.card.emoji} color={current.card.iconColor} size={44} />
               <View style={{ flex: 1 }}>
                 <Text style={s.featureName}>{current.card.name}</Text>
@@ -179,7 +202,7 @@ export default function DemoScreen() {
         </View>
       </ScrollView>
 
-      {/* Standardized footer: Messages > Button > Skip */}
+      {/* Standardized footer */}
       <OnboardingMessages startIndex={0} />
       <View data-testid="demo-next">
         <PrimaryButton label={current.btn} onPress={handleNext} color="sage" />
@@ -187,16 +210,16 @@ export default function DemoScreen() {
       <TouchableOpacity style={shared.btnGhost} onPress={() => router.replace('/onboarding/role')} data-testid="demo-skip">
         <Text style={shared.btnGhostText}>Skip {'\u2192'}</Text>
       </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 }
 
 const s = StyleSheet.create({
+  phoneWrap: { width: 200, height: 200, alignItems: 'center', justifyContent: 'center' },
+  phoneGlow: { position: 'absolute', width: 200, height: 200, borderRadius: 100, zIndex: 0 },
   featureCard: {
     flexDirection: 'row', alignItems: 'center', borderRadius: 12,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    paddingVertical: 10, paddingHorizontal: 12, gap: 10, marginBottom: 4,
+    borderWidth: 1, paddingVertical: 10, paddingHorizontal: 12, gap: 10, marginBottom: 4,
   },
   featureName: { fontFamily: ONBOARDING.bodyBold, color: '#fff', fontSize: 13 },
   featureDesc: { fontFamily: ONBOARDING.body, color: 'rgba(255,255,255,0.55)', fontSize: 12, marginTop: 1 },
