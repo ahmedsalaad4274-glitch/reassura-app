@@ -6,7 +6,8 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
-import { OnboardingMessages } from '../../src/components/OnboardingMessages';
+import OnboardingMessages from '../../src/components/OnboardingMessages';
+import PrimaryButton from '../../src/components/PrimaryButton';
 
 const { height: SCREEN_H } = Dimensions.get('window');
 const STORAGE_KEY = 'reassura_saved_places';
@@ -226,8 +227,6 @@ export default function AddHomeScreen() {
           </Text>
         </View>
 
-        {/* Rotating messages fill the dead space */}
-        <OnboardingMessages />
       </ScrollView>
 
       {/* Toast */}
@@ -235,12 +234,9 @@ export default function AddHomeScreen() {
         <View style={styles.toast}><Text style={styles.toastText}>Saved {'\ud83c\udf3f'}</Text></View>
       )}
 
-      <TouchableOpacity onPress={handleContinue} activeOpacity={0.8}>
-        <LinearGradient colors={['#5A8A6A', '#7A9E87']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={shared.btnPrimary}>
-          <Text style={shared.btnPrimaryText}>Continue {'\u2192'}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-
+      {/* Standardized footer: Messages > Button > Skip */}
+      <OnboardingMessages startIndex={4} />
+      <PrimaryButton label={'Continue \u2192'} onPress={handleContinue} color="sage" />
       <TouchableOpacity style={shared.btnGhost} onPress={() => router.push('/onboarding/invite')}>
         <Text style={shared.btnGhostText}>Skip {'\u2014'} add later</Text>
       </TouchableOpacity>

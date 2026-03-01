@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Share } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { onboardingStyles as shared, ONBOARDING } from '../../src/styles/onboarding';
-import { OnboardingMessages } from '../../src/components/OnboardingMessages';
+import OnboardingMessages from '../../src/components/OnboardingMessages';
+import PrimaryButton from '../../src/components/PrimaryButton';
 import { useOnboardingStore } from '../../src/store/onboardingStore';
 
 const INVITE_CODE = 'RIN\u00B72026';
@@ -80,13 +80,6 @@ export default function InviteScreen() {
           </Text>
         </View>
 
-        {/* Share button */}
-        <TouchableOpacity onPress={handleShare} activeOpacity={0.8} style={{ marginBottom: 14 }} data-testid="invite-share-btn">
-          <LinearGradient colors={['#5A8A6A', '#7A9E87']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={shared.btnPrimary}>
-            <Text style={shared.btnPrimaryText}>{'\ud83d\udce4'} Share invite link</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
         {/* 4 Share Method Grid */}
         <View style={styles.methodGrid}>
           {METHODS.map((m) => (
@@ -114,10 +107,13 @@ export default function InviteScreen() {
           </View>
         )}
 
-        <OnboardingMessages />
       </ScrollView>
 
-      {/* Done link */}
+      {/* Standardized footer: Messages > Button > Skip */}
+      <OnboardingMessages startIndex={0} />
+      <View data-testid="invite-share-btn">
+        <PrimaryButton label={'\ud83d\udce4 Share invite link'} onPress={handleShare} color="sage" />
+      </View>
       <TouchableOpacity style={styles.doneBtn} onPress={handleDone} data-testid="invite-done-btn">
         <Text style={styles.doneText}>I{'\u2019'}m done sharing {'\u2192'}</Text>
       </TouchableOpacity>
