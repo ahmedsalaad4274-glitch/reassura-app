@@ -8,7 +8,7 @@ Reassura is a private, invite-only peace-of-mind and family safety app. Users vo
 - **Backend**: FastAPI (Python), MongoDB
 
 ## Design System
-- Background: `#1A1612` (warm dark)
+- Background: `#1A1612` (warm dark), forest gradients per context
 - Cards: `rgba(255,255,255,0.04)` glassmorphism + `rgba(255,255,255,0.1)` borders
 - Primary: Sage green `#7A9E87` / Secondary: Gold `#C9A84C`
 - Typography: Fraunces headings (700Bold, 400Regular_Italic, 600SemiBold), DM Sans body
@@ -29,35 +29,29 @@ Reassura is a private, invite-only peace-of-mind and family safety app. Users vo
 - [x] Latest Footprint Widget, Customise Mode, Enhanced Profile Popup, Personal Greeting, Global Blur
 
 ### Phase 6: Onboarding Flow (Feb 2026)
-- [x] Demo Screen (3 slides) with swipeable intro
-- [x] Role Screen — 6 roles + custom input
-- [x] Avatar Screen — emoji picker + photo upload + map pin preview
-- [x] Permissions Screen — enlarged UI for 3 permissions
-- [x] Add Home Screen — 3 location slots (Home/sage, Work/blue, Custom/amber)
-- [x] MapLocationPicker — reusable dark map with colored pins
-- [x] Invite Screen — invite code, 4 share methods
-- [x] OnboardingMessages — rotating privacy messages on all 6 screens
-- [x] Onboarding State (Zustand + AsyncStorage) — flag persistence, skip on re-visit
+- [x] Demo Screen (3 slides), Role Screen, Avatar Screen, Permissions Screen, Add Home Screen, Invite Screen
+- [x] OnboardingMessages, Zustand state management, MapLocationPicker
 
 ### Phase 7: Visual Polish — COMPLETE (Mar 2026)
-- [x] **PrimaryButton component** — 3D animated pill button with shimmer, pulse, glow effects. Supports sage/blue/amber variants. Integrated on all 6 onboarding screens.
-- [x] **OnboardingMessages component** — Fully replaced with new design: rotating messages, active dot indicators, built-in Reassura signature. Unique startIndex per screen (0-4).
-- [x] **FeatureIcon component** — 3D rounded-square floating icons. Used on demo screen (feature cards) and permissions screen (permission icons).
-- [x] **Font size unification** — Strict consistent hierarchy: shared.title (19px Fraunces Bold), shared.subtitle (13px DM Sans), card names (13px Bold), descriptions (12px Regular).
-- [x] **Standardized footer layout** — All screens: OnboardingMessages → PrimaryButton → Skip link.
-- [x] **role.tsx flex fix** — Cards use flex:1 to fill available vertical space, eliminating dead space.
-- [x] **permissions.tsx cleanup** — Hardcoded privacy box removed (duplicate of OnboardingMessages content).
-- [x] **demo.tsx phone sizing** — Mini phone preview adjusted to 160x195.
-- [x] **avatar.tsx dark map** — Map preview changed from light (#E4E0D6) to dark (#1E1A16) theme with muted road/park colors.
+- [x] PrimaryButton — 3D shadow-based pill button (edge shadow + breathing glow + press translateY)
+- [x] OnboardingMessages — rotating messages, dot indicators, Reassura signature, borderRadius: 16
+- [x] FeatureIcon — 3D rounded-square floating icons on demo + permissions (size 44, staggered delays)
+- [x] Font size unification (shared.title 19px, shared.subtitle 13px, card names 13px, descriptions 12px)
+- [x] Standardized footer layout (Messages → Button → Skip) on all screens
+- [x] role.tsx flex fix, permissions.tsx cleanup, demo.tsx phone 160x195, avatar.tsx dark map
 
-## API Endpoints
-- GET /api/users, /api/users/current/me
-- PUT /api/users/{id}/profile, /api/users/{id}/status
-- GET /api/circles, /api/footprints, /api/travel, /api/notifications
-- POST /api/checkin/request, /api/checkin/respond, /api/emergency
+### Phase 8: Final Layout Polish — COMPLETE (Mar 2026)
+- [x] Forest gradient backgrounds per demo slide (sage→blue→amber) and permissions screen
+- [x] Dead space elimination with flex:1 + justifyContent: space-between + paddingHorizontal: 16
+- [x] Ambient radial glow behind phone previews (colour-matched per slide: sage/blue/amber)
+- [x] Feature card borders tinted to match slide colour
+- [x] Permissions: 3D FeatureIcon at size 44 with staggered delays (0/600/1200ms)
+- [x] Permissions: cards fill space with flex:1 column layout
+- [x] Permissions: ambient sage glow behind heading area
+- [x] OnboardingMessages bubble: all corners borderRadius: 16 (global fix)
 
 ## Future Backlog
 - P1: Real auth (JWT/OAuth), push notifications
-- P2: Real map (MapBox), GPS tracking, flight API, geofencing
+- P2: Real map (MapBox), GPS tracking, geofencing
 - P3: Circle invites, driving mode, shareable peace streak cards
 - P4: Code refactoring — break large screen files into smaller components
