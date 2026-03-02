@@ -252,23 +252,19 @@ export default function HomeScreen() {
 
   const renderQuickActions = () => (
     <View style={s.qaRow}>
-      <TouchableOpacity style={s.qaSafe} onPress={() => router.push('/safe-walk')} data-testid="safe-walk-action">
-        <Animated.View style={[s.qaOuterRing, { opacity: outerRingOpacity, transform: [{ scale: outerRingScale }] }]} />
-        <View style={s.qaArrowDot}><Ionicons name="arrow-forward" size={8} color={COLORS.white} /></View>
-        <Text style={s.qaIcon}>{'\u{1F6B6}'}</Text>
-        <Text style={s.qaSafeText}>Safe Walk</Text>
-        <Text style={s.qaDesc}>Share your live route</Text>
+      <TouchableOpacity style={s.qaSafe} onPress={() => setSafeWalkSheet(true)} data-testid="safe-walk-action">
+        <FeatureIcon emoji={'\u{1F6B6}'} color="blue" size={36} />
+        <View>
+          <Text style={s.qaSafeTitle}>Safe Walk</Text>
+          <Text style={s.qaSafeSub}>Share live route</Text>
+        </View>
       </TouchableOpacity>
-      <TouchableOpacity style={s.qaNight} onPress={() => router.push('/night-check')} data-testid="night-check-action">
-        <Text style={s.qaIcon}>{'\u{1F319}'}</Text>
-        <Text style={s.qaNightText}>Night Check</Text>
-        <Text style={s.qaDesc}>Say goodnight safely</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={s.qaCheck} onPress={() => { toast('\u{1F49A} All good \u2014 your circle knows'); }} data-testid="check-in-action">
-        <Animated.View style={[s.qaCheckPulse, { opacity: statusDotAnim }]} />
-        <Text style={s.qaIcon}>{'\u{1F49A}'}</Text>
-        <Text style={s.qaCheckText}>Check In</Text>
-        <Text style={s.qaDesc}>Quick status update</Text>
+      <TouchableOpacity style={s.qaCheck} onPress={() => { toast('Circle notified \u2713'); }} data-testid="check-in-action">
+        <FeatureIcon emoji={'\u{1F49A}'} color="sage" size={36} />
+        <View>
+          <Text style={s.qaCheckTitle}>Check In</Text>
+          <Text style={s.qaCheckSub}>All good</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
