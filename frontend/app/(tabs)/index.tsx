@@ -64,6 +64,7 @@ export default function HomeScreen() {
   const [isCustomising, setIsCustomising] = useState(false);
   const [widgets, setWidgets] = useState(DEFAULT_WIDGETS);
   const [streakCount] = useState(12);
+  const [safeWalkSheet, setSafeWalkSheet] = useState(false);
   const refreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const simRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const updateIdx = useRef(0);

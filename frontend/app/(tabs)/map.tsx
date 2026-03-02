@@ -438,6 +438,8 @@ const styles = StyleSheet.create({
   filterChipTextActive: {
     color: COLORS.backgroundDark,
   },
+  // Custom-drawn map — dark tile theme applied
+  // No external map library used; Views with dark color palette matching mapbox/dark-v11
   map: {
     flex: 1,
     position: 'relative',
@@ -465,11 +467,16 @@ const styles = StyleSheet.create({
     right: 0,
     height: 20,
     backgroundColor: '#1f2635',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#212a37',
   },
   road: {
     position: 'absolute',
     height: 12,
     backgroundColor: '#1a1f2c',
+    borderWidth: 0.5,
+    borderColor: '#212a37',
   },
   park: {
     position: 'absolute',
