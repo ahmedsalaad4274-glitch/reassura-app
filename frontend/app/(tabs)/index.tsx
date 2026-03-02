@@ -21,6 +21,7 @@ import { EmergencyButton } from '../../src/components/EmergencyButton';
 import { EnhancedSidebar } from '../../src/components/EnhancedSidebar';
 import { Toast } from '../../src/components/Toast';
 import { DemoOverlay } from '../../src/components/DemoMode';
+import FeatureIcon from '../../src/components/FeatureIcon';
 
 const { width } = Dimensions.get('window');
 const WIDGET_PREFS_KEY = 'reassura_widget_prefs';
