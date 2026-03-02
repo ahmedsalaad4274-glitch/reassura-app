@@ -429,6 +429,49 @@ export default function HomeScreen() {
         </View>
       </Modal>
 
+      {/* Safe Walk Bottom Sheet */}
+      <Modal visible={safeWalkSheet} transparent animationType="slide" statusBarTranslucent>
+        <TouchableOpacity style={s.sheetOverlay} activeOpacity={1} onPress={() => setSafeWalkSheet(false)}>
+          <View style={s.sheetContainer} onStartShouldSetResponder={() => true}>
+            <View style={s.sheetHandle} />
+
+            {/* Mini map */}
+            <View style={s.sheetMap}>
+              <View style={s.sheetRoutePath} />
+              <View style={s.sheetWalkDot}>
+                <Animated.View style={[s.sheetWalkPulse, { opacity: statusDotAnim }]} />
+                <Text style={{ fontSize: 12 }}>{'\u{1F6B6}'}</Text>
+              </View>
+              <View style={s.sheetHomePin}>
+                <Text style={{ fontSize: 14 }}>{'\u{1F3E0}'}</Text>
+              </View>
+              <View style={s.sheetMapPill}>
+                <Text style={s.sheetMapPillText}>{'\u{1F6B6}'} Safe Walk {'\u00B7'} Live {'\u00B7'} 8 min away</Text>
+              </View>
+            </View>
+
+            {/* Circle watching */}
+            <Text style={s.sheetWatchLabel}>CIRCLE IS WATCHING</Text>
+            <View style={s.sheetWatchRow}>
+              <View style={s.sheetAvatarGroup}>
+                {[{ e: '\u{1F469}\u{1F3FE}', n: 'Mum' }, { e: '\u{1F468}\u{1F3FE}', n: 'Dad' }, { e: '\u{1F9D1}\u{1F3FE}', n: 'Jamie' }].map((m, i) => (
+                  <View key={i} style={s.sheetAvatarItem}>
+                    <View style={s.sheetAvatarCircle}><Text style={{ fontSize: 14 }}>{m.e}</Text></View>
+                    <Text style={s.sheetAvatarName}>{m.n}</Text>
+                  </View>
+                ))}
+              </View>
+              <Text style={s.sheetWatchNote}>watching your route live</Text>
+            </View>
+
+            {/* Stop button */}
+            <TouchableOpacity style={s.sheetStopBtn} onPress={() => setSafeWalkSheet(false)} data-testid="stop-safe-walk-button">
+              <Text style={s.sheetStopText}>Stop Safe Walk</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       <ProfilePopup user={selectedMemberForPopup} visible={!!selectedMemberForPopup} onClose={() => setSelectedMemberForPopup(null)} />
     </SafeAreaView>
   );
