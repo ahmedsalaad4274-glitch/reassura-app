@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment configuration
-BACKEND_URL = "https://reassura-onboard.preview.emergentagent.com/api"
+BACKEND_URL = "https://peace-of-mind-app.preview.emergentagent.com/api"
 
 def detailed_profile_test():
     """Show exact response from profile update endpoint"""
