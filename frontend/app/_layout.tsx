@@ -19,6 +19,7 @@ import { COLORS } from '../src/constants/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { useOnboardingStore } from '../src/store/onboardingStore';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
+import { SafeWalkProvider } from '../src/context/SafeWalkContext';
 
 function RootLayoutInner() {
   const { loadFromStorage } = useAuthStore();
@@ -77,6 +78,9 @@ function RootLayoutInner() {
         <Stack.Screen name="notifications" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="night-check" options={{ presentation: 'modal', animation: 'fade' }} />
         <Stack.Screen name="safe-walk" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="safe-walk-setup" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="safe-walk-arrived" options={{ presentation: 'modal', animation: 'fade' }} />
+        <Stack.Screen name="safe-walk-overdue" options={{ presentation: 'modal', animation: 'fade' }} />
       </Stack>
     </GestureHandlerRootView>
   );
@@ -85,7 +89,9 @@ function RootLayoutInner() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <RootLayoutInner />
+      <SafeWalkProvider>
+        <RootLayoutInner />
+      </SafeWalkProvider>
     </ThemeProvider>
   );
 }

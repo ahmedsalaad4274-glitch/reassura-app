@@ -24,6 +24,7 @@ import { DemoOverlay } from '../../src/components/DemoMode';
 import FeatureIcon from '../../src/components/FeatureIcon';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ThemeToggle } from '../../src/components/ThemeToggle';
+import { useSafeWalk } from '../../src/context/SafeWalkContext';
 
 const { width } = Dimensions.get('window');
 const WIDGET_PREFS_KEY = 'reassura_widget_prefs';
@@ -59,6 +60,7 @@ function getGreeting() {
 export default function HomeScreen() {
   const router = useRouter();
   const { theme, isDark } = useTheme();
+  const { walk, markArrived, getRemainingMin, getProgress } = useSafeWalk();
   const [toastMsg, setToastMsg] = useState('');
   const [toastVis, setToastVis] = useState(false);
   const [checkinModal, setCheckinModal] = useState<{ fromName: string } | null>(null);
@@ -68,8 +70,10 @@ export default function HomeScreen() {
   const [widgets, setWidgets] = useState(DEFAULT_WIDGETS);
   const [streakCount] = useState(12);
   const [safeWalkSheet, setSafeWalkSheet] = useState(false);
+  const [walkTick, setWalkTick] = useState(0);
   const refreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const simRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const walkTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const updateIdx = useRef(0);
 
   // Animations
@@ -129,6 +133,21 @@ export default function HomeScreen() {
     ])).start();
     return () => { if (refreshRef.current) clearInterval(refreshRef.current); if (simRef.current) clearInterval(simRef.current); clearTimeout(t1); clearTimeout(t2); };
   }, []);
+
+  // Walk timer — tick every 10s to update banner
+  useEffect(() => {
+    if (walk.isActive) {
+      walkTimerRef.current = setInterval(() => setWalkTick(t => t + 1), 10000);
+      return () => { if (walkTimerRef.current) clearInterval(walkTimerRef.current); };
+    }
+  }, [walk.isActive]);
+
+  // Navigate to overdue screen when overdue
+  useEffect(() => {
+    if (walk.isOverdue) {
+      router.push('/safe-walk-overdue');
+    }
+  }, [walk.isOverdue]);
 
   const loadWidgetPrefs = async () => {
     try {
@@ -254,21 +273,63 @@ export default function HomeScreen() {
   );
 
   const renderQuickActions = () => (
-    <View style={s.qaRow}>
-      <TouchableOpacity style={[s.qaSafe, { backgroundColor: isDark ? 'rgba(74,106,170,0.08)' : 'rgba(74,106,170,0.06)', borderColor: isDark ? 'rgba(74,106,170,0.25)' : 'rgba(74,106,170,0.18)' }]} onPress={() => setSafeWalkSheet(true)} data-testid="safe-walk-action">
-        <FeatureIcon emoji={'\u{1F6B6}'} color="blue" size={36} />
-        <View>
-          <Text style={[s.qaSafeTitle, { color: theme.textPrimary }]}>Safe Walk</Text>
-          <Text style={[s.qaSafeSub, { color: theme.muted }]}>Share live route</Text>
+    <View>
+      {/* Active Walk Banner */}
+      {walk.isActive && (
+        <View style={[s.walkBanner, { backgroundColor: isDark ? 'rgba(74,106,170,0.12)' : 'rgba(74,106,170,0.08)', borderColor: isDark ? 'rgba(74,106,170,0.25)' : 'rgba(74,106,170,0.18)' }]}>
+          <View style={s.walkBannerTop}>
+            <View style={s.walkBannerLeft}>
+              <Text style={s.walkBannerIcon}>{'\u{1F6B6}'}</Text>
+              <Text style={[s.walkBannerText, { color: isDark ? '#8AAAE0' : '#4A6AAA' }]}>
+                Safe Walk active {'\u00B7'} {getRemainingMin()} min remaining
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={s.arrivedPill}
+              onPress={() => { markArrived(); router.push('/safe-walk-arrived'); }}
+              testID="ive-arrived-button"
+            >
+              <Text style={s.arrivedPillText}>I've Arrived {'\u{1F3E0}'}</Text>
+            </TouchableOpacity>
+          </View>
+          {/* Progress bar */}
+          <View style={[s.walkProgressBg, { backgroundColor: theme.border }]}>
+            <View style={[s.walkProgressFill, { width: `${Math.max(2, getProgress() * 100)}%` }]} />
+          </View>
+          {/* Location sharing notice */}
+          <Text style={[s.walkShareNote, { color: theme.textSecondary }]}>
+            {'\u{1F4CD}'} Sharing your neighbourhood with {walk.watchers.filter(w => w.selected).map(w => w.name).join(', ')}
+          </Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity style={[s.qaCheck, { backgroundColor: isDark ? 'rgba(122,158,135,0.08)' : 'rgba(122,158,135,0.06)', borderColor: isDark ? 'rgba(122,158,135,0.2)' : 'rgba(122,158,135,0.15)' }]} onPress={() => { toast('Circle notified \u2713'); }} data-testid="check-in-action">
-        <FeatureIcon emoji={'\u{1F49A}'} color="sage" size={36} />
-        <View>
-          <Text style={[s.qaCheckTitle, { color: theme.textPrimary }]}>Check In</Text>
-          <Text style={[s.qaCheckSub, { color: theme.muted }]}>All good</Text>
-        </View>
-      </TouchableOpacity>
+      )}
+
+      {/* 3-Pill Quick Actions Row */}
+      <View style={s.qaPillRow}>
+        <TouchableOpacity
+          style={[s.qaPill, { borderColor: theme.sage }]}
+          onPress={() => walk.isActive ? null : router.push('/safe-walk-setup')}
+          testID="safe-walk-action"
+        >
+          <Text style={s.qaPillIcon}>{'\u{1F6B6}'}</Text>
+          <Text style={[s.qaPillText, { color: theme.sage }]}>Safe Walk</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[s.qaPill, { borderColor: theme.sage }]}
+          onPress={() => { toast('Circle notified \u2713'); }}
+          testID="check-in-action"
+        >
+          <Text style={s.qaPillIcon}>{'\u{1F49A}'}</Text>
+          <Text style={[s.qaPillText, { color: theme.sage }]}>Check In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[s.qaPill, { borderColor: theme.sage }]}
+          onPress={() => router.push('/night-check')}
+          testID="night-check-action"
+        >
+          <Text style={s.qaPillIcon}>{'\u{1F319}'}</Text>
+          <Text style={[s.qaPillText, { color: theme.sage }]}>Night Check</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -516,20 +577,25 @@ const s = StyleSheet.create({
   imHomeFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)' },
   imHomeDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: COLORS.sageGreen },
   imHomeFooterText: { fontSize: 10, color: 'rgba(255,255,255,0.4)' },
-  // Quick Actions — two-card row
-  qaRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 18, marginBottom: 10 },
-  qaSafe: {
-    flex: 1, backgroundColor: 'rgba(74,106,170,0.08)', borderColor: 'rgba(74,106,170,0.25)', borderWidth: 1.5,
-    borderRadius: 14, paddingVertical: 11, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 8,
+  // Quick Actions — 3-pill row
+  qaPillRow: { flexDirection: 'row', gap: 8 },
+  qaPill: {
+    flex: 1, height: 36, borderRadius: 18, borderWidth: 1, flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 10,
   },
-  qaSafeTitle: { fontSize: 13, fontWeight: '600', color: COLORS.white },
-  qaSafeSub: { fontSize: 10, color: 'rgba(255,255,255,0.38)' },
-  qaCheck: {
-    flex: 1, backgroundColor: 'rgba(122,158,135,0.08)', borderColor: 'rgba(122,158,135,0.2)', borderWidth: 1.5,
-    borderRadius: 14, paddingVertical: 11, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 8,
-  },
-  qaCheckTitle: { fontSize: 13, fontWeight: '600', color: COLORS.white },
-  qaCheckSub: { fontSize: 10, color: 'rgba(255,255,255,0.38)' },
+  qaPillIcon: { fontSize: 13 },
+  qaPillText: { fontSize: 11, fontWeight: '600' },
+  // Active Walk Banner
+  walkBanner: { borderWidth: 1, borderRadius: 12, padding: 10, marginBottom: 8 },
+  walkBannerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  walkBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 },
+  walkBannerIcon: { fontSize: 14 },
+  walkBannerText: { fontSize: 12, fontWeight: '600' },
+  arrivedPill: { backgroundColor: '#5E9070', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
+  arrivedPillText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
+  walkProgressBg: { height: 3, borderRadius: 2, marginTop: 8, overflow: 'hidden' },
+  walkProgressFill: { height: 3, borderRadius: 2, backgroundColor: '#7A9E87' },
+  walkShareNote: { fontSize: 10, fontStyle: 'italic', marginTop: 6 },
   // Safe Walk Bottom Sheet
   sheetOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   sheetContainer: {

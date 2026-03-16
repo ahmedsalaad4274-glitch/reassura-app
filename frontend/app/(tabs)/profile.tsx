@@ -536,6 +536,33 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Safe Walks History */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>SAFE WALKS</Text>
+          <Text style={[styles.settingValue, { paddingHorizontal: SPACING.md, marginBottom: SPACING.sm, color: theme.sage }]}>
+            You completed 3 safe walks this month {'\u{1F33F}'}
+          </Text>
+          {[
+            { dest: 'Home from work', date: 'Today', dur: '18 min' },
+            { dest: "To Mia's house", date: 'Yesterday', dur: '11 min' },
+            { dest: 'Late night walk', date: 'Mon', dur: '22 min' },
+          ].map((w, i) => (
+            <View key={i} style={[styles.settingRow, { borderBottomColor: theme.border }]}>
+              <View style={styles.settingLeft}>
+                <Text style={{ fontSize: 16 }}>{'\u{1F6B6}'}</Text>
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, { color: theme.textPrimary }]}>{w.dest}</Text>
+                  <Text style={[styles.settingValue, { color: theme.sage }]}>All safe {'\u00B7'} {w.date}</Text>
+                </View>
+              </View>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={[styles.settingValue, { color: theme.textSecondary }]}>{w.dur}</Text>
+                <Text style={{ color: theme.sage, fontWeight: '700', fontSize: 13 }}>{'\u2713'}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
         <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
           <Ionicons name="log-out-outline" size={20} color="#DC5050" />
           <Text style={styles.signOutText}>Sign Out</Text>
