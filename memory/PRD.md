@@ -1,14 +1,13 @@
 # Reassura - Product Requirements Document
 
 ## Overview
-Reassura is a private, invite-only peace-of-mind and family safety app. It's a high-fidelity React Native (Expo) prototype with interactive onboarding, tab-based navigation, and rich animated UI.
+Reassura is a private, invite-only peace-of-mind and family safety app. High-fidelity React Native (Expo) prototype with interactive onboarding, tab-based navigation, animated UI, light/dark theme, and Safe Walk feature.
 
 ## Tech Stack
 - **Frontend**: React Native, Expo, Expo Router, TypeScript
-- **Backend**: FastAPI + MongoDB (mock data)
 - **Animation**: react-native-reanimated, Animated API, expo-linear-gradient
 - **SVG**: react-native-svg
-- **State**: zustand, ThemeContext (React Context)
+- **State**: zustand, ThemeContext, SafeWalkContext
 
 ## Architecture
 ```
@@ -16,57 +15,46 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
   app/
     (onboarding)/ - welcome, demo, permissions, role
     (tabs)/ - index (home), map, circles, travel, profile
-    _layout.tsx - root layout (wraps ThemeProvider)
+    _layout.tsx - ThemeProvider + SafeWalkProvider wrap
+    safe-walk-setup.tsx - Setup modal (3 fields)
+    safe-walk-arrived.tsx - Celebration screen
+    safe-walk-overdue.tsx - Overdue alert (3 buttons)
   src/
-    components/
-      circles/ - OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo
-      ThemeToggle.tsx - Sun/moon toggle button
-      FootprintCard.tsx, StoryCircle.tsx, etc.
     context/
-      ThemeContext.tsx - LIGHT/DARK tokens, ThemeProvider, useTheme
+      ThemeContext.tsx - LIGHT/DARK tokens, useTheme
+      SafeWalkContext.tsx - Walk state, timer, overdue detection
+    components/
+      ThemeToggle.tsx - Sun/moon toggle
+      circles/ - OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo
+      FootprintCard.tsx, StoryCircle.tsx, etc.
     constants/theme.ts
-    store/appStore.ts, onboardingStore.ts
-    services/api.ts
+    store/ - appStore, onboardingStore, authStore
 ```
 
-## What's Been Implemented
+## Implemented Features
 
-### Light/Dark Mode Toggle (Complete - Mar 2026)
-- **ThemeContext** with LIGHT and DARK color token objects
-- **ThemeProvider** wrapping entire app at root layout level
-- **ThemeToggle** component: 34px circle button with sun/moon emoji
-- Toggle visible in top-right header of ALL 5 screens
-- Light mode (cream #FDFAF7) is default on first install
-- Dark mode (#0A0806) activated via toggle
-- Preference persisted via AsyncStorage (`reassura_theme`)
-- StatusBar adapts to mode
-- Sub-components (FootprintCard, StoryCircle, BentoGrid) theme-aware
-- **Exceptions preserved**: I'm Home button (always green), boarding pass (always brown), flight path (always dark night sky)
-- Tab bar adapts background/icon colors to theme
+### Safe Walk (Complete - Mar 2026)
+- **Quick Actions Row**: 3 pill buttons on Home (Safe Walk, Check In, Night Check)
+- **Setup Modal**: Destination input, watcher chips (4 pre-selected), duration selector (5-30 min)
+- **Active Walk Banner**: Blue-themed banner on Home with timer, progress bar, "I've Arrived" button, location sharing notice
+- **Celebration Screen**: Sage gradient, bouncing house emoji, "You're home safe!", Done button
+- **Overdue Alert**: Amber-tinted screen with 3 response buttons (All good / Extend / Help)
+- **Profile History**: SAFE WALKS section with 3 MOCKED walk entries
+- **State**: SafeWalkContext manages isActive, timer, overdue (auto-triggers at duration + 5 min), auto-clear at 2 hours
+- No new tabs — accessed from Home only
+
+### Light/Dark Mode (Complete - Mar 2026)
+- ThemeContext with LIGHT/DARK token objects, ThemeProvider wraps entire app
+- ThemeToggle (34px sun/moon emoji button) on all 5 screens
+- Light (#FDFAF7) default, dark (#0A0806) via toggle, persisted in AsyncStorage
+- Exceptions: I'm Home (always green), boarding pass (always brown), flight path (always dark)
 
 ### Circles Screen (Complete - Mar 2026)
-- BentoGrid for 2+ circles, 3D orbit view for single circle
-- Two-layer OrbitCanvas: visual 3D plane + flat touch overlay
-- WaveOverlay bottom sheet on node tap
-- Evening Horizon progress bar, I'm Home 3D button
-- isDark prop support
+- BentoGrid + 3D OrbitCanvas with two-layer touch architecture
+- WaveOverlay, Evening Horizon, I'm Home 3D button
 
-### Onboarding (Complete)
-- Welcome screen, animated demo slides, permissions, circle connection
-
-### Home Screen (Complete)
-- I'm Home card, streak counter, circle member strip
-- Quick actions: Safe Walk + Check In
-- Latest footprints feed
-
-### Map Screen (Complete)
-- Custom dark-themed map, avatar pins, search, filter pills
-
-### Travel Screen (Complete)
-- Boarding pass, night sky flight path, travel profile
-
-### Profile Screen (Complete)
-- Profile card, mood picker, settings
+### Other Screens (Complete)
+- Onboarding (4-step flow), Home, Map, Travel, Profile, Create Circle modal
 
 ## Design Tokens
 | Token | Light | Dark |
@@ -74,16 +62,13 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
 | background | #FDFAF7 | #0A0806 |
 | surface | #FFFFFF | rgba(255,255,255,0.04) |
 | textPrimary | #3D2E22 | rgba(247,243,238,0.92) |
-| textSecondary | #8C7B6E | rgba(247,243,238,0.38) |
 | sage | #7A9E87 | #7A9E87 |
 | terra | #C4704A | #C4704A |
-| navBg | #FFFFFF | rgba(10,8,6,0.96) |
+| blue (Safe Walk) | #4A6AAA | #4A6AAA |
 
-## Backlog (Prioritized)
+## Backlog
 - P1: Real authentication (JWT/OAuth)
 - P1: Live map integration (Mapbox)
-- P2: Push notifications
-- P2: GPS tracking, geofencing
-- P3: Circle invites flow, driving mode
+- P2: Push notifications, GPS tracking
+- P3: Circle invites, driving mode
 - P3: Shareable peace streak cards
-- P4: Component refactoring
