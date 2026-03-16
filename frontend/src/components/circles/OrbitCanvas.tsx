@@ -1,333 +1,221 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Animated, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { COLORS, FONTS } from '../../constants/theme';
+import React, { useEffect, useRef, useMemo } from 'react';
+import { View, Text, Animated, StyleSheet, Dimensions, TouchableOpacity, Easing } from 'react-native';
 import { ReassuraLogo } from './ReassuraLogo';
 
-const { width: SCREEN_W } = Dimensions.get('window');
 const TERRA = '#C4704A';
 const SAGE = '#7A9E87';
+const INK = '#0D0B09';
 
-function getStatusLabel(status: string): 'active' | 'steady' | 'quiet' | 'off-grid' {
-  if (status === 'on_the_way' || status === 'travelling' || status === 'safe_walk') return 'active';
-  if (status === 'home' || status === 'arrived' || status === 'all_good') return 'steady';
-  if (status === 'offline' || status === 'goodnight') return 'quiet';
-  return 'steady';
-}
+const W = Dimensions.get('window').width;
+const RADII = [W * 0.17, W * 0.25, W * 0.32];
+const RING_COLORS = ['rgba(196,112,74,0.15)', 'rgba(122,158,135,0.12)', 'rgba(196,112,74,0.08)'];
+const RING_SPEEDS = [65000, 95000, 38000];
+const ORBIT_SPEEDS = [20000, 28000, 38000];
+const NODE_SIZE = 44;
+const HUB_SIZE = 70;
 
-interface OrbitMember {
+export interface OrbitMember {
   id: string;
   name: string;
   emoji: string;
-  status: string;
-  isOffGrid?: boolean;
+  status: 'active' | 'steady' | 'quiet' | 'offgrid';
 }
 
 interface Props {
-  circleName: string;
   members: OrbitMember[];
   onNodePress: (member: OrbitMember) => void;
-  isDark?: boolean;
-  canvasSize?: number;
+  arenaHeight: number;
 }
 
-export const OrbitCanvas: React.FC<Props> = ({
-  circleName,
-  members,
-  onNodePress,
-  isDark = true,
-  canvasSize,
-}) => {
-  const size = canvasSize || Math.min(SCREEN_W - 32, 360);
-  const center = size / 2;
-  const hubSize = 56;
+export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight }) => {
+  const cx = W / 2;
+  const cy = arenaHeight / 2;
 
+  // Ring rotations (native driver for transform)
+  const ringRots = useRef(RADII.map(() => new Animated.Value(0))).current;
   // Hub pulse
   const hubPulse = useRef(new Animated.Value(0.85)).current;
-
-  // Ripple animation
-  const rippleScale = useRef(new Animated.Value(0)).current;
-  const rippleOpacity = useRef(new Animated.Value(0)).current;
-  const [rippleTarget, setRippleTarget] = useState<{ x: number; y: number } | null>(null);
-
-  // Per-member orbit angles
-  const angleRefs = useRef<Animated.Value[]>([]);
-  if (angleRefs.current.length !== members.length) {
-    angleRefs.current = members.map((_, i) => new Animated.Value((i * 360) / members.length));
-  }
-
-  useEffect(() => {
-    // Hub pulse
-    Animated.loop(Animated.sequence([
-      Animated.timing(hubPulse, { toValue: 1, duration: 1400, useNativeDriver: true }),
-      Animated.timing(hubPulse, { toValue: 0.85, duration: 1400, useNativeDriver: true }),
-    ])).start();
-
-    // Orbit animations - different speeds per member
-    const anims = members.map((m, i) => {
-      const statusLabel = getStatusLabel(m.status);
-      if (m.isOffGrid) return null; // off-grid nodes don't orbit
-      const speed = statusLabel === 'active' ? 6000 : statusLabel === 'steady' ? 10000 : 14000;
-      const startAngle = (i * 360) / members.length;
-      return Animated.loop(
-        Animated.timing(angleRefs.current[i], {
-          toValue: startAngle + 360,
-          duration: speed + i * 1500,
-          useNativeDriver: false,
-        })
-      );
-    });
-
-    anims.forEach(a => a?.start());
-    return () => anims.forEach(a => a?.stop());
-  }, [members.length]);
-
-  const fireRipple = (targetX: number, targetY: number) => {
-    setRippleTarget({ x: targetX, y: targetY });
-    rippleScale.setValue(0);
-    rippleOpacity.setValue(0.6);
-    Animated.parallel([
-      Animated.timing(rippleScale, { toValue: 1, duration: 800, useNativeDriver: true }),
-      Animated.timing(rippleOpacity, { toValue: 0, duration: 800, useNativeDriver: true }),
-    ]).start(() => setRippleTarget(null));
-  };
-
-  // Orbit rings
-  const rings = [0.35, 0.55, 0.75];
-  const bg = isDark ? '#0D0B09' : '#F7F3EE';
-
-  // Assign members to rings based on count
-  const assignRing = (index: number, total: number) => {
-    if (total <= 3) return 1; // middle ring
-    if (index === 0) return 0; // inner
-    if (index < total - 1) return 1; // middle
-    return 2; // outer
-  };
-
-  // Off-grid members drift outward
-  const driftAnims = useRef<Animated.Value[]>(
-    members.filter(m => m.isOffGrid).map(() => new Animated.Value(0))
-  ).current;
-
-  useEffect(() => {
-    driftAnims.forEach(a => {
-      Animated.loop(Animated.sequence([
-        Animated.timing(a, { toValue: 15, duration: 3000, useNativeDriver: true }),
-        Animated.timing(a, { toValue: 0, duration: 3000, useNativeDriver: true }),
-      ])).start();
-    });
-  }, []);
-
-  // Active node pulse
-  const nodePulse = useRef(new Animated.Value(1)).current;
-  useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(nodePulse, { toValue: 1.12, duration: 800, useNativeDriver: true }),
-      Animated.timing(nodePulse, { toValue: 1, duration: 800, useNativeDriver: true }),
-    ])).start();
-  }, []);
-
-  // Nudge dot pulse for off-grid
+  // Node angles
+  const angles = useRef(members.map((_, i) => new Animated.Value(i * (360 / members.length)))).current;
+  // Node positions
+  const posXs = useRef(members.map(() => new Animated.Value(0))).current;
+  const posYs = useRef(members.map(() => new Animated.Value(0))).current;
+  // Active pulse
+  const activePulse = useRef(new Animated.Value(1)).current;
+  // Off-grid drift
+  const driftAnim = useRef(new Animated.Value(0)).current;
+  // Nudge dot pulse
   const nudgePulse = useRef(new Animated.Value(0.4)).current;
+
   useEffect(() => {
+    // Ring rotations
+    ringRots.forEach((rot, i) => {
+      Animated.loop(
+        Animated.timing(rot, { toValue: 1, duration: RING_SPEEDS[i], useNativeDriver: true, easing: Easing.linear })
+      ).start();
+    });
+
+    // Hub breathing
     Animated.loop(Animated.sequence([
-      Animated.timing(nudgePulse, { toValue: 1, duration: 1200, useNativeDriver: true }),
-      Animated.timing(nudgePulse, { toValue: 0.4, duration: 1200, useNativeDriver: true }),
+      Animated.timing(hubPulse, { toValue: 1, duration: 2000, useNativeDriver: false }),
+      Animated.timing(hubPulse, { toValue: 0.85, duration: 2000, useNativeDriver: false }),
     ])).start();
+
+    // Active node pulse
+    Animated.loop(Animated.sequence([
+      Animated.timing(activePulse, { toValue: 1.15, duration: 1000, useNativeDriver: false }),
+      Animated.timing(activePulse, { toValue: 1, duration: 1000, useNativeDriver: false }),
+    ])).start();
+
+    // Off-grid drift
+    Animated.loop(Animated.sequence([
+      Animated.timing(driftAnim, { toValue: 5, duration: 3000, useNativeDriver: false }),
+      Animated.timing(driftAnim, { toValue: -5, duration: 3000, useNativeDriver: false }),
+    ])).start();
+
+    // Nudge dot pulse
+    Animated.loop(Animated.sequence([
+      Animated.timing(nudgePulse, { toValue: 1, duration: 1200, useNativeDriver: false }),
+      Animated.timing(nudgePulse, { toValue: 0.4, duration: 1200, useNativeDriver: false }),
+    ])).start();
+
+    // Node orbits
+    members.forEach((m, i) => {
+      const isOffGrid = m.status === 'offgrid';
+      const isQuiet = m.status === 'quiet';
+      const ringIdx = isOffGrid ? 2 : (i % 3);
+      const radius = isOffGrid ? RADII[2] + 15 : RADII[ringIdx];
+      const startAngle = i * (360 / members.length);
+
+      // Set initial position
+      const initRad = (startAngle * Math.PI) / 180;
+      posXs[i].setValue(cx + Math.cos(initRad) * radius - NODE_SIZE / 2);
+      posYs[i].setValue(cy + Math.sin(initRad) * radius - NODE_SIZE / 2);
+
+      // Only orbit active + steady nodes
+      if (!isOffGrid && !isQuiet) {
+        const speed = ORBIT_SPEEDS[ringIdx] + i * 2000;
+        Animated.loop(
+          Animated.timing(angles[i], {
+            toValue: startAngle + 360,
+            duration: speed,
+            useNativeDriver: false,
+            easing: Easing.linear,
+          })
+        ).start();
+
+        angles[i].addListener(({ value }) => {
+          const rad = (value * Math.PI) / 180;
+          posXs[i].setValue(cx + Math.cos(rad) * radius - NODE_SIZE / 2);
+          posYs[i].setValue(cy + Math.sin(rad) * radius - NODE_SIZE / 2);
+        });
+      }
+    });
+
+    return () => { angles.forEach(a => a.removeAllListeners()); };
   }, []);
-
-  const statusText = (() => {
-    const activeCount = members.filter(m => getStatusLabel(m.status) === 'active').length;
-    const offGridCount = members.filter(m => m.isOffGrid).length;
-    if (offGridCount > 0) return `${offGridCount} quiet`;
-    if (activeCount > 0) return `${activeCount} active`;
-    return 'All steady';
-  })();
-
-  let offGridIdx = 0;
 
   return (
-    <View style={[s.canvas, { width: size, height: size, backgroundColor: bg }]} data-testid="orbit-canvas">
-      {/* Orbit rings */}
-      {rings.map((r, i) => (
-        <View key={i} style={[s.ring, {
-          width: size * r * 2, height: size * r * 2, borderRadius: size * r,
-          left: center - size * r, top: center - size * r,
-          borderColor: isDark ? 'rgba(122,158,135,0.08)' : 'rgba(122,158,135,0.15)',
-        }]} />
-      ))}
+    <View style={[s.arena, { height: arenaHeight }]}>
+      <View style={s.tiltedPlane}>
+        {/* Dashed rings */}
+        {RADII.map((r, i) => (
+          <Animated.View key={i} style={[s.ring, {
+            width: r * 2, height: r * 2, borderRadius: r,
+            left: cx - r, top: cy - r,
+            borderColor: RING_COLORS[i],
+            transform: [{ rotate: ringRots[i].interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }],
+          }]} />
+        ))}
 
-      {/* Ripple effect */}
-      {rippleTarget && (
-        <Animated.View style={[s.ripple, {
-          left: center - size * 0.4,
-          top: center - size * 0.4,
-          width: size * 0.8, height: size * 0.8,
-          borderRadius: size * 0.4,
-          opacity: rippleOpacity,
-          transform: [{ scale: rippleScale }],
-        }]} />
-      )}
+        {/* Hub */}
+        <Animated.View style={[s.hub, {
+          left: cx - HUB_SIZE / 2, top: cy - HUB_SIZE / 2,
+          opacity: hubPulse,
+        }]}>
+          <ReassuraLogo size={38} />
+        </Animated.View>
 
-      {/* Hub */}
-      <Animated.View style={[s.hub, {
-        left: center - hubSize / 2, top: center - hubSize / 2,
-        width: hubSize, height: hubSize, borderRadius: hubSize / 2,
-        opacity: hubPulse,
-      }]}>
-        <ReassuraLogo size={30} isDark={isDark} />
-      </Animated.View>
-
-      {/* Status label below hub */}
-      <View style={[s.statusPill, { left: center - 40, top: center + hubSize / 2 + 6 }]}>
-        <Text style={[s.statusText, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(13,11,9,0.5)' }]}>
-          {statusText}
-        </Text>
-      </View>
-
-      {/* Orbiting member nodes */}
-      {members.map((member, i) => {
-        const statusLabel = getStatusLabel(member.status);
-        const isOffGrid = member.isOffGrid || false;
-        const ringIdx = assignRing(i, members.length);
-        const radius = size * rings[ringIdx];
-        const nodeSize = 40;
-
-        if (isOffGrid) {
-          // Off-grid: fixed position, drifts outward, dashed border
-          const angle = ((i * 360) / members.length) * (Math.PI / 180);
-          const outerR = size * 0.78;
-          const baseX = center + Math.cos(angle) * outerR - nodeSize / 2;
-          const baseY = center + Math.sin(angle) * outerR - nodeSize / 2;
-          const driftIdx = offGridIdx++;
-          const drift = driftAnims[driftIdx] || new Animated.Value(0);
+        {/* Nodes */}
+        {members.map((m, i) => {
+          const isOffGrid = m.status === 'offgrid';
+          const isActive = m.status === 'active';
 
           return (
-            <Animated.View key={member.id} style={[s.nodeWrap, {
-              left: baseX, top: baseY,
-              opacity: 0.32,
-              transform: [{ translateY: drift }],
+            <Animated.View key={m.id} style={[s.nodeWrap, {
+              left: posXs[i],
+              top: posYs[i],
+              opacity: isOffGrid ? 0.32 : 1,
+              transform: [
+                { scale: isActive ? activePulse as any : 1 },
+                { translateY: isOffGrid ? driftAnim as any : 0 },
+              ],
             }]}>
-              <TouchableOpacity onPress={() => onNodePress(member)} testID={`orbit-node-${member.id}`}>
-                <View style={[s.node, {
-                  width: nodeSize, height: nodeSize, borderRadius: nodeSize / 2,
-                  borderStyle: 'dashed',
-                  backgroundColor: isDark ? '#0D0B09' : '#F7F3EE',
-                }]}>
-                  <Text style={{ fontSize: 18 }}>{member.emoji}</Text>
+              <TouchableOpacity onPress={() => onNodePress(m)} activeOpacity={0.7}>
+                <View style={[s.node, isOffGrid && s.nodeOffGrid]}>
+                  <Text style={s.nodeEmoji}>{m.emoji}</Text>
                 </View>
-                <Animated.View style={[s.nudgeDot, { opacity: nudgePulse }]} />
-                <Text style={[s.nodeName, { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(13,11,9,0.4)' }]} numberOfLines={1}>{member.name}</Text>
+                <Text style={s.nodeName} numberOfLines={1}>{m.name}</Text>
               </TouchableOpacity>
+              {isOffGrid && (
+                <Animated.View style={[s.nudgeDot, { opacity: nudgePulse }]} />
+              )}
             </Animated.View>
           );
-        }
-
-        // Regular orbiting node
-        const angleVal = angleRefs.current[i];
-        if (!angleVal) return null;
-
-        return (
-          <AnimatedOrbitNode
-            key={member.id}
-            member={member}
-            angleVal={angleVal}
-            center={center}
-            radius={radius}
-            nodeSize={nodeSize}
-            statusLabel={statusLabel}
-            nodePulse={nodePulse}
-            isDark={isDark}
-            onPress={() => {
-              const angle = ((i * 360) / members.length) * (Math.PI / 180);
-              const x = center + Math.cos(angle) * radius;
-              const y = center + Math.sin(angle) * radius;
-              onNodePress(member);
-              fireRipple(x, y);
-            }}
-          />
-        );
-      })}
+        })}
+      </View>
     </View>
   );
 };
 
-// Animated orbit node as separate component for performance
-const AnimatedOrbitNode: React.FC<{
-  member: OrbitMember;
-  angleVal: Animated.Value;
-  center: number;
-  radius: number;
-  nodeSize: number;
-  statusLabel: string;
-  nodePulse: Animated.Value;
-  isDark: boolean;
-  onPress: () => void;
-}> = ({ member, angleVal, center, radius, nodeSize, statusLabel, nodePulse, isDark, onPress }) => {
-  const x = angleVal.interpolate({
-    inputRange: [0, 360],
-    outputRange: [
-      center + Math.cos(0) * radius - nodeSize / 2,
-      center + Math.cos(2 * Math.PI) * radius - nodeSize / 2,
-    ],
-  });
-
-  // Use listener to compute position
-  const posX = useRef(new Animated.Value(center + radius - nodeSize / 2)).current;
-  const posY = useRef(new Animated.Value(center - nodeSize / 2)).current;
-
-  useEffect(() => {
-    const id = angleVal.addListener(({ value }) => {
-      const rad = (value * Math.PI) / 180;
-      posX.setValue(center + Math.cos(rad) * radius - nodeSize / 2);
-      posY.setValue(center + Math.sin(rad) * radius - nodeSize / 2);
-    });
-    return () => angleVal.removeListener(id);
-  }, [center, radius, nodeSize]);
-
-  const scale = statusLabel === 'active' ? nodePulse : 1;
-
-  return (
-    <Animated.View style={[s.nodeWrap, {
-      left: posX, top: posY,
-      transform: [{ scale: scale as any }],
-    }]}>
-      <TouchableOpacity onPress={onPress} testID={`orbit-node-${member.id}`}>
-        <View style={[s.node, {
-          width: nodeSize, height: nodeSize, borderRadius: nodeSize / 2,
-          backgroundColor: isDark ? '#0D0B09' : '#F7F3EE',
-        }]}>
-          <Text style={{ fontSize: 18 }}>{member.emoji}</Text>
-        </View>
-        <Text style={[s.nodeName, { color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(13,11,9,0.6)' }]} numberOfLines={1}>{member.name}</Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
-
 const s = StyleSheet.create({
-  canvas: { position: 'relative', alignSelf: 'center', overflow: 'hidden' },
-  ring: { position: 'absolute', borderWidth: 1 },
+  arena: { width: W, overflow: 'hidden' },
+  tiltedPlane: {
+    flex: 1,
+    transform: [{ perspective: 600 }, { rotateX: '20deg' }],
+  },
+  ring: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderStyle: 'dashed',
+  },
   hub: {
-    position: 'absolute', backgroundColor: TERRA,
+    position: 'absolute',
+    width: HUB_SIZE, height: HUB_SIZE, borderRadius: HUB_SIZE / 2,
+    backgroundColor: TERRA,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: TERRA, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 12, elevation: 8,
     zIndex: 10,
+    elevation: 12,
+    shadowColor: TERRA,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
   },
-  statusPill: { position: 'absolute', width: 80, alignItems: 'center', zIndex: 10 },
-  statusText: { fontSize: 9, fontWeight: '500', letterSpacing: 0.3 },
-  nodeWrap: { position: 'absolute', alignItems: 'center', zIndex: 5 },
+  nodeWrap: {
+    position: 'absolute',
+    alignItems: 'center',
+    zIndex: 5,
+    width: NODE_SIZE + 12,
+  },
   node: {
-    borderWidth: 1.5, borderColor: SAGE,
+    width: NODE_SIZE, height: NODE_SIZE, borderRadius: NODE_SIZE / 2,
+    borderWidth: 1.5,
+    borderColor: SAGE,
+    backgroundColor: 'rgba(122,158,135,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
-  nodeName: { fontSize: 9, marginTop: 2, textAlign: 'center', maxWidth: 50 },
-  nudgeDot: {
-    position: 'absolute', top: -2, right: -2,
-    width: 8, height: 8, borderRadius: 4, backgroundColor: TERRA,
-    shadowColor: TERRA, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.6, shadowRadius: 4,
+  nodeOffGrid: {
+    borderStyle: 'dashed',
   },
-  ripple: {
-    position: 'absolute', borderWidth: 2, borderColor: TERRA,
-    backgroundColor: 'transparent', zIndex: 3,
+  nodeEmoji: { fontSize: 20 },
+  nodeName: {
+    fontSize: 9, color: 'rgba(255,255,255,0.55)',
+    textAlign: 'center', marginTop: 2, maxWidth: NODE_SIZE + 12,
+  },
+  nudgeDot: {
+    position: 'absolute', top: -2, right: 0,
+    width: 8, height: 8, borderRadius: 4,
+    backgroundColor: TERRA,
+    shadowColor: TERRA, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.6, shadowRadius: 4,
   },
 });
