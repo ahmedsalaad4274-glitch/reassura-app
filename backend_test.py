@@ -10,7 +10,7 @@ from datetime import datetime
 import sys
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://peace-of-mind-app.preview.emergentagent.com/api"
+BACKEND_URL = "https://reassura-circles.preview.emergentagent.com/api"
 
 class ReassuraAPITester:
     def __init__(self):
