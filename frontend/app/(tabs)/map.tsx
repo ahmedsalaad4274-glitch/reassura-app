@@ -19,6 +19,10 @@ import { userApi, circleApi } from '../../src/services/api';
 import { ProfilePopup } from '../../src/components/ProfilePopup';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ThemeToggle } from '../../src/components/ThemeToggle';
+import { ReassuraLogo } from '../../src/components/circles/ReassuraLogo';
+
+const TERRA = '#C4704A';
+const SAGE_DK = '#4A7A5A';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,10 +38,9 @@ interface MapPinProps {
 const MapPin: React.FC<MapPinProps> = ({ user, x, y, onPress, delay = 0, isCurrentUser = false }) => {
   const bounceAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const statusColor = getStatusColor(user.status);
-  
+  const pinColor = isCurrentUser ? TERRA : SAGE_DK;
+
   useEffect(() => {
-    // Bounce in animation
     setTimeout(() => {
       Animated.spring(bounceAnim, {
         toValue: 1,
@@ -46,28 +49,18 @@ const MapPin: React.FC<MapPinProps> = ({ user, x, y, onPress, delay = 0, isCurre
         useNativeDriver: true,
       }).start();
     }, delay);
-    
-    // Pulse animation for travelling users
-    if (user.status === 'travelling') {
-      const pulse = Animated.loop(
+
+    // Pulsing halo for current user
+    if (isCurrentUser) {
+      Animated.loop(
         Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
+          Animated.timing(pulseAnim, { toValue: 1.6, duration: 1200, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
         ])
-      );
-      pulse.start();
-      return () => pulse.stop();
+      ).start();
     }
-  }, [delay, user.status]);
-  
+  }, [delay, isCurrentUser]);
+
   return (
     <Animated.View
       style={[
@@ -77,41 +70,26 @@ const MapPin: React.FC<MapPinProps> = ({ user, x, y, onPress, delay = 0, isCurre
           top: y,
           transform: [
             { scale: bounceAnim },
-            { translateY: bounceAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [50, 0],
-            }) },
+            { translateY: bounceAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) },
           ],
         },
       ]}
     >
       <TouchableOpacity onPress={onPress}>
-        <Animated.View style={[styles.pinGlow, { backgroundColor: statusColor, transform: [{ scale: pulseAnim }] }]} />
-        <View style={[styles.pinTeardrop, { backgroundColor: statusColor }]}>
-          <View style={styles.pinInner}>
-            <Text style={styles.pinEmoji}>{user.emoji}</Text>
-          </View>
-          <View style={styles.pinPoint} />
-        </View>
+        {/* Pulsing halo — current user only */}
         {isCurrentUser && (
-          <View style={styles.starBadge}>
-            <Text style={styles.starText}>★</Text>
-          </View>
+          <Animated.View style={[styles.pinHalo, { backgroundColor: TERRA, transform: [{ scale: pulseAnim }], opacity: pulseAnim.interpolate({ inputRange: [1, 1.6], outputRange: [0.35, 0] }) }]} />
         )}
-        {user.status === 'travelling' && (
-          <View style={styles.travelBadge}>
-            <Text style={styles.travelBadgeText}>✈️</Text>
+        {/* Teardrop marker */}
+        <View style={[styles.pinTeardrop, { backgroundColor: pinColor }]}>
+          <View style={styles.pinInner}>
+            <ReassuraLogo size={16} />
           </View>
-        )}
-        {user.battery_level && user.battery_level < 20 && (
-          <View style={styles.batteryBadge}>
-            <Text style={styles.batteryText}>🔋{user.battery_level}%</Text>
-          </View>
-        )}
+          <View style={[styles.pinPoint, { borderTopColor: pinColor }]} />
+        </View>
       </TouchableOpacity>
       <View style={styles.pinLabel}>
         <Text style={styles.pinName}>{user.name}</Text>
-        <Text style={styles.pinStatus}>{user.status_emoji}</Text>
       </View>
     </Animated.View>
   );
@@ -202,19 +180,18 @@ export default function MapScreen() {
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
           <TouchableOpacity
-            style={[styles.filterChip, !selectedCircle && styles.filterChipActive]}
+            style={[styles.filterChip, !selectedCircle && { backgroundColor: SAGE_DK }]}
             onPress={() => setSelectedCircle(null)}
           >
-            <Text style={[styles.filterChipText, !selectedCircle && styles.filterChipTextActive]}>All</Text>
+            <Text style={[styles.filterChipText, !selectedCircle && { color: '#FFFFFF' }]}>All</Text>
           </TouchableOpacity>
           {circles.map(circle => (
             <TouchableOpacity
               key={circle.id}
-              style={[styles.filterChip, selectedCircle === circle.id && styles.filterChipActive]}
+              style={[styles.filterChip, selectedCircle === circle.id && { backgroundColor: SAGE_DK }]}
               onPress={() => setSelectedCircle(circle.id)}
             >
-              <Text style={styles.filterChipEmoji}>{circle.emoji}</Text>
-              <Text style={[styles.filterChipText, selectedCircle === circle.id && styles.filterChipTextActive]}>
+              <Text style={[styles.filterChipText, selectedCircle === circle.id && { color: '#FFFFFF' }]}>
                 {circle.name}
               </Text>
             </TouchableOpacity>
@@ -427,20 +404,10 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
     marginRight: SPACING.sm,
   },
-  filterChipActive: {
-    backgroundColor: COLORS.sageGreen,
-  },
-  filterChipEmoji: {
-    fontSize: 14,
-    marginRight: SPACING.xs,
-  },
   filterChipText: {
     fontFamily: FONTS.bodyMedium,
     color: COLORS.white,
     fontSize: 13,
-  },
-  filterChipTextActive: {
-    color: COLORS.backgroundDark,
   },
   // Custom-drawn map — dark tile theme applied
   // No external map library used; Views with dark color palette matching mapbox/dark-v11
@@ -515,14 +482,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
   },
-  pinGlow: {
+  pinHalo: {
     position: 'absolute',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    opacity: 0.3,
-    top: -10,
-    left: -10,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    top: -4,
+    left: -4,
   },
   pinTeardrop: {
     width: 44,
@@ -537,15 +503,12 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   pinInner: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.white,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  pinEmoji: {
-    fontSize: 20,
   },
   pinPoint: {
     position: 'absolute',
@@ -557,50 +520,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 12,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    borderTopColor: 'inherit',
-  },
-  starBadge: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: COLORS.terracotta,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  starText: {
-    color: COLORS.white,
-    fontSize: 10,
-  },
-  travelBadge: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: COLORS.navyBlue,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  travelBadgeText: {
-    fontSize: 10,
-  },
-  batteryBadge: {
-    position: 'absolute',
-    top: -20,
-    left: -10,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  batteryText: {
-    fontFamily: FONTS.body,
-    color: COLORS.gold,
-    fontSize: 10,
   },
   pinLabel: {
     flexDirection: 'row',
@@ -615,10 +534,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     color: COLORS.white,
     fontSize: 11,
-  },
-  pinStatus: {
-    fontSize: 10,
-    marginLeft: 4,
   },
   mapControls: {
     position: 'absolute',
