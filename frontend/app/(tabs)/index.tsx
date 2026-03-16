@@ -22,6 +22,8 @@ import { EnhancedSidebar } from '../../src/components/EnhancedSidebar';
 import { Toast } from '../../src/components/Toast';
 import { DemoOverlay } from '../../src/components/DemoMode';
 import FeatureIcon from '../../src/components/FeatureIcon';
+import { useTheme } from '../../src/context/ThemeContext';
+import { ThemeToggle } from '../../src/components/ThemeToggle';
 
 const { width } = Dimensions.get('window');
 const WIDGET_PREFS_KEY = 'reassura_widget_prefs';
@@ -56,6 +58,7 @@ function getGreeting() {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { theme, isDark } = useTheme();
   const [toastMsg, setToastMsg] = useState('');
   const [toastVis, setToastVis] = useState(false);
   const [checkinModal, setCheckinModal] = useState<{ fromName: string } | null>(null);
@@ -252,28 +255,28 @@ export default function HomeScreen() {
 
   const renderQuickActions = () => (
     <View style={s.qaRow}>
-      <TouchableOpacity style={s.qaSafe} onPress={() => setSafeWalkSheet(true)} data-testid="safe-walk-action">
+      <TouchableOpacity style={[s.qaSafe, { backgroundColor: isDark ? 'rgba(74,106,170,0.08)' : 'rgba(74,106,170,0.06)', borderColor: isDark ? 'rgba(74,106,170,0.25)' : 'rgba(74,106,170,0.18)' }]} onPress={() => setSafeWalkSheet(true)} data-testid="safe-walk-action">
         <FeatureIcon emoji={'\u{1F6B6}'} color="blue" size={36} />
         <View>
-          <Text style={s.qaSafeTitle}>Safe Walk</Text>
-          <Text style={s.qaSafeSub}>Share live route</Text>
+          <Text style={[s.qaSafeTitle, { color: theme.textPrimary }]}>Safe Walk</Text>
+          <Text style={[s.qaSafeSub, { color: theme.muted }]}>Share live route</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={s.qaCheck} onPress={() => { toast('Circle notified \u2713'); }} data-testid="check-in-action">
+      <TouchableOpacity style={[s.qaCheck, { backgroundColor: isDark ? 'rgba(122,158,135,0.08)' : 'rgba(122,158,135,0.06)', borderColor: isDark ? 'rgba(122,158,135,0.2)' : 'rgba(122,158,135,0.15)' }]} onPress={() => { toast('Circle notified \u2713'); }} data-testid="check-in-action">
         <FeatureIcon emoji={'\u{1F49A}'} color="sage" size={36} />
         <View>
-          <Text style={s.qaCheckTitle}>Check In</Text>
-          <Text style={s.qaCheckSub}>All good</Text>
+          <Text style={[s.qaCheckTitle, { color: theme.textPrimary }]}>Check In</Text>
+          <Text style={[s.qaCheckSub, { color: theme.muted }]}>All good</Text>
         </View>
       </TouchableOpacity>
     </View>
   );
 
   const renderStories = () => (
-    <View style={s.glass}>
+    <View style={[s.glass, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
       <View style={s.sectionHeader}>
         <View style={s.sectionAccent} />
-        <Text style={s.sectionLabel}>YOUR CIRCLE</Text>
+        <Text style={[s.sectionLabel, { color: theme.muted }]}>YOUR CIRCLE</Text>
       </View>
       {circles.length > 0 && (
         <View style={s.storiesWrap}>
@@ -293,7 +296,7 @@ export default function HomeScreen() {
               );
             })}
           </CrossPlatformPager>
-          <View style={s.dots}>{circles.map((_, i) => <View key={i} style={[s.dot, i === selectedCircleIndex && s.dotActive]} />)}</View>
+          <View style={s.dots}>{circles.map((_, i) => <View key={i} style={[s.dot, { backgroundColor: theme.dotInactive }, i === selectedCircleIndex && { backgroundColor: theme.sage, width: 18 }]} />)}</View>
         </View>
       )}
     </View>
@@ -303,13 +306,13 @@ export default function HomeScreen() {
     if (!latestFp) return null;
     const timeAgo = (() => { const d = Date.now() - new Date(latestFp.created_at).getTime(); const m = Math.floor(d / 60000); return m < 60 ? `${m}m ago` : `${Math.floor(m / 60)}h ago`; })();
     return (
-      <View style={s.fpCard}>
-        <Text style={s.fpLabel}>{'\u{1F463}'} Latest Footprint</Text>
+      <View style={[s.fpCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <Text style={[s.fpLabel, { color: theme.muted }]}>{'\u{1F463}'} Latest Footprint</Text>
         <View style={s.fpRow}>
           <View style={s.fpAvatar}><Text style={{ fontSize: 14 }}>{latestFp.user_emoji}</Text></View>
           <View style={{ flex: 1 }}>
-            <Text style={s.fpName}>{latestFp.user_name} · {latestFp.status?.replace('_', ' ')}</Text>
-            <Text style={s.fpMsg}>"{latestFp.message}" · {timeAgo}</Text>
+            <Text style={[s.fpName, { color: theme.textPrimary }]}>{latestFp.user_name} · {latestFp.status?.replace('_', ' ')}</Text>
+            <Text style={[s.fpMsg, { color: theme.muted }]}>"{latestFp.message}" · {timeAgo}</Text>
           </View>
           <TouchableOpacity><Text style={{ fontSize: 18 }}>{'\u2764\uFE0F'}</Text></TouchableOpacity>
         </View>
@@ -318,7 +321,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
+    <SafeAreaView style={[s.container, { backgroundColor: theme.background }]} edges={['top']}>
       <EnhancedSidebar visible={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <Toast message={toastMsg} visible={toastVis} onHide={() => setToastVis(false)} type="success" />
       <DemoOverlay onNavigate={(route) => router.push(route as any)} />
@@ -326,18 +329,19 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => setSidebarOpen(true)} testID="sidebar-menu-button">
-          <Ionicons name="menu" size={24} color={COLORS.white} />
+          <Ionicons name="menu" size={24} color={theme.textPrimary} />
         </TouchableOpacity>
         <View style={s.headerCenter}>
-          <Ionicons name="leaf" size={16} color={COLORS.sageGreen} />
-          <Text style={s.headerTitle}>Reassura</Text>
+          <Ionicons name="leaf" size={16} color={theme.sage} />
+          <Text style={[s.headerTitle, { color: theme.textPrimary }]}>Reassura</Text>
         </View>
         <View style={s.headerRight}>
+          <ThemeToggle />
           <TouchableOpacity onPress={() => router.push('/notifications')} testID="notifications-button">
-            <Ionicons name="notifications-outline" size={22} color={COLORS.white} />
+            <Ionicons name="notifications-outline" size={22} color={theme.textPrimary} />
           </TouchableOpacity>
-          <TouchableOpacity style={[s.editPill, isCustomising && s.editPillActive]} onPress={() => setIsCustomising(!isCustomising)}>
-            <Text style={[s.editPillText, isCustomising && s.editPillTextActive]}>
+          <TouchableOpacity style={[s.editPill, { backgroundColor: isDark ? 'rgba(122,158,135,0.15)' : 'rgba(74,122,90,0.1)', borderColor: isDark ? 'rgba(122,158,135,0.3)' : 'rgba(74,122,90,0.25)' }, isCustomising && { backgroundColor: theme.sageDark, borderColor: theme.sageDark }]} onPress={() => setIsCustomising(!isCustomising)}>
+            <Text style={[s.editPillText, { color: theme.sage }, isCustomising && { color: '#FFFFFF' }]}>
               {isCustomising ? '\u2713 Done' : '\u270F\uFE0F Edit'}
             </Text>
           </TouchableOpacity>
@@ -348,14 +352,14 @@ export default function HomeScreen() {
         {/* Greeting */}
         <View style={s.greetingRow}>
           <View>
-            <Text style={s.greetingText}>{getGreeting()}, {userName} {'\u{1F44B}\u{1F3FE}'}</Text>
+            <Text style={[s.greetingText, { color: theme.textPrimary }]}>{getGreeting()}, {userName} {'\u{1F44B}\u{1F3FE}'}</Text>
             <View style={s.statusRow}>
               <Animated.View style={[s.statusDot, { opacity: statusDotAnim }]} />
-              <Text style={s.statusText}>All safe · everyone accounted for</Text>
+              <Text style={[s.statusText, { color: theme.muted }]}>All safe · everyone accounted for</Text>
             </View>
           </View>
-          <View style={s.streakPill}>
-            <Text style={s.streakText}>{'\u{1F525}'} {streakCount}</Text>
+          <View style={[s.streakPill, { backgroundColor: theme.streakBg, borderColor: theme.streakBorder }]}>
+            <Text style={[s.streakText, { color: theme.streakText }]}>{'\u{1F525}'} {streakCount}</Text>
           </View>
         </View>
 
@@ -380,10 +384,10 @@ export default function HomeScreen() {
             {renderWidget('circleStories')}
             {renderWidget('latestFootprint')}
             {/* Footprints Feed */}
-            <View style={s.glass}>
+            <View style={[s.glass, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
               <View style={s.sectionHeader}>
                 <View style={s.sectionAccent} />
-                <Text style={s.sectionLabel}>LATEST FOOTPRINTS</Text>
+                <Text style={[s.sectionLabel, { color: theme.muted }]}>LATEST FOOTPRINTS</Text>
               </View>
               {circleFootprints.slice(0, 5).map(fp => <FootprintCard key={fp.id} footprint={fp} />)}
               {circleFootprints.length === 0 && <View style={s.empty}><Text style={s.emptyText}>No recent activity</Text></View>}

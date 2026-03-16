@@ -17,6 +17,8 @@ import { useAppStore } from '../../src/store/appStore';
 import { useAuthStore, SavedPlace } from '../../src/store/authStore';
 import { userApi, circleApi } from '../../src/services/api';
 import { ProfilePopup } from '../../src/components/ProfilePopup';
+import { useTheme } from '../../src/context/ThemeContext';
+import { ThemeToggle } from '../../src/components/ThemeToggle';
 
 const { width, height } = Dimensions.get('window');
 
@@ -116,6 +118,7 @@ const MapPin: React.FC<MapPinProps> = ({ user, x, y, onPress, delay = 0, isCurre
 };
 
 export default function MapScreen() {
+  const { theme, isDark } = useTheme();
   const { users, circles, currentUser, selectedMemberForPopup, setSelectedMemberForPopup, setUsers, setCircles, setCurrentUser } = useAppStore();
   const { savedPlaces, addSavedPlace, removeSavedPlace } = useAuthStore();
   const [selectedCircle, setSelectedCircle] = useState<string | null>(null);
@@ -189,12 +192,13 @@ export default function MapScreen() {
   ];
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color={COLORS.muted} />
-          <Text style={styles.searchPlaceholder}>Search your circles...</Text>
+        <View style={[styles.searchBar, { backgroundColor: isDark ? 'rgba(61, 46, 34, 0.95)' : 'rgba(61,46,34,0.08)' }]}>
+          <Ionicons name="search" size={20} color={theme.muted} />
+          <Text style={[styles.searchPlaceholder, { color: theme.muted }]}>Search your circles...</Text>
+          <ThemeToggle />
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
           <TouchableOpacity

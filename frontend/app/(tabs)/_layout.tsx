@@ -3,9 +3,10 @@ import { Tabs } from 'expo-router';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { COLORS, FONTS } from '../../src/constants/theme';
+import { FONTS } from '../../src/constants/theme';
+import { useTheme } from '../../src/context/ThemeContext';
 
-function TabIcon({ name, focused, isCenter = false }: { name: string; focused: boolean; isCenter?: boolean }) {
+function TabIcon({ name, focused, isCenter = false, activeColor, inactiveColor, cardColor }: { name: string; focused: boolean; isCenter?: boolean; activeColor: string; inactiveColor: string; cardColor: string }) {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   
   React.useEffect(() => {
@@ -36,6 +37,7 @@ function TabIcon({ name, focused, isCenter = false }: { name: string; focused: b
           style={[
             styles.centerTabGlow,
             {
+              backgroundColor: activeColor,
               transform: [{ scale: pulseAnim }],
               opacity: pulseAnim.interpolate({
                 inputRange: [1, 1.15],
@@ -44,11 +46,11 @@ function TabIcon({ name, focused, isCenter = false }: { name: string; focused: b
             },
           ]}
         />
-        <View style={[styles.centerTab, focused && styles.centerTabActive]}>
+        <View style={[styles.centerTab, { backgroundColor: cardColor, borderColor: activeColor }, focused && { backgroundColor: `${activeColor}33` }]}>
           <Ionicons
             name="people"
             size={26}
-            color={focused ? COLORS.sageGreen : COLORS.white}
+            color={focused ? activeColor : '#FFFFFF'}
           />
         </View>
       </View>
@@ -59,23 +61,25 @@ function TabIcon({ name, focused, isCenter = false }: { name: string; focused: b
     <Ionicons
       name={name as any}
       size={24}
-      color={focused ? COLORS.sageGreen : COLORS.whiteTransparent}
+      color={focused ? activeColor : inactiveColor}
     />
   );
 }
 
 export default function TabLayout() {
+  const { theme, isDark } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: COLORS.sageGreen,
-        tabBarInactiveTintColor: COLORS.whiteTransparent,
+        tabBarStyle: [styles.tabBar, { backgroundColor: theme.navBg, borderTopColor: theme.navBorder }],
+        tabBarActiveTintColor: theme.navActive,
+        tabBarInactiveTintColor: theme.navInactive,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarBackground: () => (
-          <View style={styles.tabBarBackground}>
-            <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill} />
+          <View style={[styles.tabBarBackground, { backgroundColor: theme.navBg }]}>
+            <BlurView intensity={50} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
           </View>
         ),
       }}
@@ -84,35 +88,35 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} activeColor={theme.navActive} inactiveColor={theme.navInactive} cardColor={theme.background} />,
         }}
       />
       <Tabs.Screen
         name="map"
         options={{
           title: 'Map',
-          tabBarIcon: ({ focused }) => <TabIcon name="map" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="map" focused={focused} activeColor={theme.navActive} inactiveColor={theme.navInactive} cardColor={theme.background} />,
         }}
       />
       <Tabs.Screen
         name="circles"
         options={{
           title: 'Circles',
-          tabBarIcon: ({ focused }) => <TabIcon name="people" focused={focused} isCenter />,
+          tabBarIcon: ({ focused }) => <TabIcon name="people" focused={focused} isCenter activeColor={theme.navActive} inactiveColor={theme.navInactive} cardColor={theme.background} />,
         }}
       />
       <Tabs.Screen
         name="travel"
         options={{
           title: 'Travel',
-          tabBarIcon: ({ focused }) => <TabIcon name="airplane" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="airplane" focused={focused} activeColor={theme.navActive} inactiveColor={theme.navInactive} cardColor={theme.background} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} activeColor={theme.navActive} inactiveColor={theme.navInactive} cardColor={theme.background} />,
         }}
       />
     </Tabs>
@@ -122,7 +126,6 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    backgroundColor: 'rgba(26, 22, 18, 0.95)',
     borderTopWidth: 0,
     height: 80,
     paddingTop: 8,
@@ -130,7 +133,6 @@ const styles = StyleSheet.create({
   },
   tabBarBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26, 22, 18, 0.9)',
     overflow: 'hidden',
   },
   tabBarLabel: {
@@ -148,19 +150,13 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: COLORS.sageGreen,
   },
   centerTab: {
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: COLORS.backgroundCard,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.sageGreen,
-  },
-  centerTabActive: {
-    backgroundColor: 'rgba(122, 158, 135, 0.2)',
   },
 });

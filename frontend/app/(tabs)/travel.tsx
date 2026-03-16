@@ -10,10 +10,13 @@ import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme
 import { BlurView } from 'expo-blur';
 import { useAppStore } from '../../src/store/appStore';
 import { travelApi, userApi } from '../../src/services/api';
+import { useTheme } from '../../src/context/ThemeContext';
+import { ThemeToggle } from '../../src/components/ThemeToggle';
 
 const { width, height } = Dimensions.get('window');
 
 export default function TravelScreen() {
+  const { theme, isDark } = useTheme();
   const [pageIndex, setPageIndex] = useState(0);
   const [showLandingCelebration, setShowLandingCelebration] = useState(false);
   const { activeTravel, setActiveTravel, setUsers, users } = useAppStore();
@@ -189,14 +192,17 @@ export default function TravelScreen() {
   );
 
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
+    <SafeAreaView style={[s.container, { backgroundColor: theme.background }]} edges={['top']}>
       <CrossPlatformPager style={s.pager} initialPage={0} onPageSelected={(e) => setPageIndex(e.nativeEvent.position)}>
         {/* Page 1: Live Flight / Empty */}
         <View key="1" style={s.page}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.pageContent}>
             <View style={s.header}>
-              <Text style={s.headerTitle}>Travel</Text>
-              <Text style={s.headerSubtitle}>Your circle, wherever they are {'\u{1F30D}'}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={[s.headerTitle, { color: theme.textPrimary }]}>Travel</Text>
+                <ThemeToggle />
+              </View>
+              <Text style={[s.headerSubtitle, { color: theme.muted }]}>Your circle, wherever they are {'\u{1F30D}'}</Text>
             </View>
             {travel ? renderBoardingPass() : renderEmptyState()}
           </ScrollView>

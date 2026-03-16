@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useTheme } from '../../src/context/ThemeContext';
+import { ThemeToggle } from '../../src/components/ThemeToggle';
 import { OrbitCanvas, OrbitMember } from '../../src/components/circles/OrbitCanvas';
 import { BentoGrid } from '../../src/components/circles/BentoGrid';
 import { WaveOverlay } from '../../src/components/circles/WaveOverlay';
@@ -72,6 +74,7 @@ const ImHomeButton = () => {
 
 // ── Main Screen ──────────────────────────────────────────
 export default function CirclesScreen() {
+  const { theme, isDark } = useTheme();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [waveTarget, setWaveTarget] = useState<OrbitMember | null>(null);
 
@@ -85,26 +88,27 @@ export default function CirclesScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container} edges={['top']}>
+    <SafeAreaView style={[s.container, { backgroundColor: theme.background }]} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scrollContent}>
         {/* ── 1. Header ────────────────────── */}
         <View style={s.header}>
           {selectedId && CIRCLES.length >= 2 && (
             <TouchableOpacity onPress={() => setSelectedId(null)} style={s.backBtn} data-testid="back-to-grid">
-              <Ionicons name="arrow-back" size={22} color={CREAM} />
+              <Ionicons name="arrow-back" size={22} color={theme.textPrimary} />
             </TouchableOpacity>
           )}
-          <Text style={s.title}>Your Circles</Text>
-          <View style={s.memberChip}>
-            <Text style={s.memberChipText}>{totalMembers} members</Text>
+          <Text style={[s.title, { color: theme.textPrimary }]}>Your Circles</Text>
+          <View style={[s.memberChip, { backgroundColor: isDark ? 'rgba(122,158,135,0.12)' : 'rgba(74,122,90,0.1)' }]}>
+            <Text style={[s.memberChipText, { color: theme.sage }]}>{totalMembers} members</Text>
           </View>
-          <TouchableOpacity style={s.addBtn}>
-            <Ionicons name="add" size={22} color={SAGE} />
+          <ThemeToggle />
+          <TouchableOpacity style={[s.addBtn, { backgroundColor: isDark ? 'rgba(122,158,135,0.1)' : 'rgba(74,122,90,0.08)' }]}>
+            <Ionicons name="add" size={22} color={theme.sage} />
           </TouchableOpacity>
         </View>
 
         {/* ── 2. BentoGrid ─────────────────── */}
-        {showGrid && <BentoGrid circles={CIRCLES} onSelect={setSelectedId} />}
+        {showGrid && <BentoGrid circles={CIRCLES} onSelect={setSelectedId} isDark={isDark} />}
 
         {/* ── 3-7. Circle detail ────────────── */}
         {current && (
@@ -114,21 +118,21 @@ export default function CirclesScreen() {
 
             {/* 4. Circle Name + Subtitle */}
             <View style={s.circleInfo}>
-              <Text style={s.circleName}>{current.name}</Text>
-              <Text style={s.circleSubtitle}>
+              <Text style={[s.circleName, { color: theme.textPrimary }]}>{current.name}</Text>
+              <Text style={[s.circleSubtitle, { color: theme.textSecondary }]}>
                 {current.members.length} members {'\u00B7'} {statusSummary(current.members as OrbitMember[])}
               </Text>
             </View>
 
             {/* 5. Evening Horizon */}
-            <View style={s.horizonSection}>
+            <View style={[s.horizonSection, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
               <View style={s.horizonHeader}>
-                <Text style={s.horizonTitle}>Evening Horizon</Text>
-                <Text style={s.horizonCount}>
+                <Text style={[s.horizonTitle, { color: theme.textPrimary }]}>Evening Horizon</Text>
+                <Text style={[s.horizonCount, { color: theme.textSecondary }]}>
                   {current.members.filter(m => m.status === 'active').length} of {current.members.length} active
                 </Text>
               </View>
-              <View style={s.horizonBarBg}>
+              <View style={[s.horizonBarBg, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(61,46,34,0.08)' }]}>
                 <LinearGradient
                   colors={[SAGE_DK, SAGE]}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
@@ -144,17 +148,17 @@ export default function CirclesScreen() {
                 {current.members.map(m => (
                   <View key={m.id} style={s.pipItem}>
                     <View style={[s.pip, { backgroundColor: pipColor(m.status) }]} />
-                    <Text style={s.pipName}>{m.name}</Text>
+                    <Text style={[s.pipName, { color: theme.textSecondary }]}>{m.name}</Text>
                   </View>
                 ))}
               </View>
             </View>
 
-            {/* 6. I'm Home CTA */}
+            {/* 6. I'm Home CTA — always green gradient (exception) */}
             <ImHomeButton />
 
             {/* 7. Sub-label */}
-            <Text style={s.subLabel}>One tap {'\u00B7'} your whole circle knows</Text>
+            <Text style={[s.subLabel, { color: theme.textTertiary }]}>One tap {'\u00B7'} your whole circle knows</Text>
           </>
         )}
       </ScrollView>

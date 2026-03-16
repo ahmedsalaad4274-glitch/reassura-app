@@ -17,10 +17,15 @@ interface CircleData {
 interface Props {
   circles: CircleData[];
   onSelect: (id: string) => void;
+  isDark?: boolean;
 }
 
-export const BentoGrid: React.FC<Props> = ({ circles, onSelect }) => {
+export const BentoGrid: React.FC<Props> = ({ circles, onSelect, isDark = true }) => {
   const cellW = (SCREEN_W - 48 - 10) / 2;
+  const cardBg = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(61,46,34,0.04)';
+  const cardBorder = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(61,46,34,0.09)';
+  const textColor = isDark ? CREAM : '#3D2E22';
+  const subColor = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(61,46,34,0.38)';
 
   return (
     <View style={s.grid}>
@@ -32,7 +37,7 @@ export const BentoGrid: React.FC<Props> = ({ circles, onSelect }) => {
         return (
           <TouchableOpacity
             key={c.id}
-            style={[s.cell, { width: cellW, height: cellW * 0.85 }]}
+            style={[s.cell, { width: cellW, height: cellW * 0.85, backgroundColor: cardBg, borderColor: cardBorder }]}
             onPress={() => onSelect(c.id)}
             activeOpacity={0.7}
           >
@@ -56,10 +61,10 @@ export const BentoGrid: React.FC<Props> = ({ circles, onSelect }) => {
               })}
             </View>
 
-            <Text style={s.cellName}>{c.name}</Text>
+            <Text style={[s.cellName, { color: textColor }]}>{c.name}</Text>
             <View style={s.cellStatusRow}>
               <View style={[s.cellDot, { backgroundColor: dotColor }]} />
-              <Text style={s.cellStatus}>{statusText}</Text>
+              <Text style={[s.cellStatus, { color: subColor }]}>{statusText}</Text>
             </View>
           </TouchableOpacity>
         );

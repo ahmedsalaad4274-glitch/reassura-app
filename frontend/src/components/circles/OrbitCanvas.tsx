@@ -117,7 +117,7 @@ export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight
   return (
     <View style={[s.arena, { height: arenaHeight }]}>
       {/* ── Layer 1: Visual-only 3D plane (rings + hub + ghost nodes) ── */}
-      <View style={s.tiltedPlane} pointerEvents="none">
+      <View style={[s.tiltedPlane, { pointerEvents: 'none' }]}>
         {/* Dashed rings */}
         {RADII.map((r, i) => (
           <Animated.View key={i} style={[s.ring, {

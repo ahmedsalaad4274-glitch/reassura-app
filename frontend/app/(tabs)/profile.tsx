@@ -22,6 +22,8 @@ import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme
 import { useAppStore } from '../../src/store/appStore';
 import { useAuthStore, SavedPlace } from '../../src/store/authStore';
 import { userApi } from '../../src/services/api';
+import { useTheme } from '../../src/context/ThemeContext';
+import { ThemeToggle } from '../../src/components/ThemeToggle';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const MAP_HEIGHT = 240;
@@ -51,6 +53,7 @@ const emojiOptions = [
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { theme, isDark } = useTheme();
   const { currentUser, setCurrentUser } = useAppStore();
   const { logout, savedPlaces, addSavedPlace, removeSavedPlace, updateSavedPlace } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -166,8 +169,12 @@ export default function ProfileScreen() {
   const statusColor = COLORS.sageGreen;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Header with toggle */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: SPACING.lg, paddingTop: SPACING.sm }}>
+          <ThemeToggle />
+        </View>
         {/* Profile Card */}
         <View style={styles.profileCard}>
           <TouchableOpacity
@@ -189,18 +196,18 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           {isEditing ? (
-            <TextInput style={styles.nameInput} value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={COLORS.muted} />
+            <TextInput style={[styles.nameInput, { color: theme.textPrimary }]} value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={theme.muted} />
           ) : (
-            <Text style={styles.name}>{currentUser?.name || 'You'}</Text>
+            <Text style={[styles.name, { color: theme.textPrimary }]}>{currentUser?.name || 'You'}</Text>
           )}
 
           {/* Mood */}
-          <TouchableOpacity style={styles.moodRow} onPress={() => setShowMoodPicker(true)}>
-            <Text style={styles.moodText}>{mood || '\u{1F60A}'} {mood ? MOOD_OPTIONS.find(m => m.emoji === mood)?.label || 'Mood' : 'Set mood'}</Text>
-            <Ionicons name="chevron-down" size={14} color={COLORS.muted} />
+          <TouchableOpacity style={[styles.moodRow, { backgroundColor: theme.card }]} onPress={() => setShowMoodPicker(true)}>
+            <Text style={[styles.moodText, { color: theme.textPrimary }]}>{mood || '\u{1F60A}'} {mood ? MOOD_OPTIONS.find(m => m.emoji === mood)?.label || 'Mood' : 'Set mood'}</Text>
+            <Ionicons name="chevron-down" size={14} color={theme.muted} />
           </TouchableOpacity>
 
-          <Text style={styles.status}>
+          <Text style={[styles.status, { color: theme.muted }]}>
             {currentUser?.status_emoji} {currentUser?.status?.replace('_', ' ')}
           </Text>
 

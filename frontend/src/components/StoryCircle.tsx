@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { COLORS, FONTS, getStatusColor } from '../constants/theme';
 import { User } from '../store/appStore';
+import { useTheme } from '../context/ThemeContext';
 
 interface StoryCircleProps {
   user: User;
@@ -16,6 +17,7 @@ export const StoryCircle: React.FC<StoryCircleProps> = ({
   isCurrentUser = false,
   size = 70,
 }) => {
+  const { theme } = useTheme();
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const statusColor = getStatusColor(user.status);
   const mood = (user as any).mood;
@@ -61,6 +63,7 @@ export const StoryCircle: React.FC<StoryCircleProps> = ({
               width: size,
               height: size,
               borderRadius: size / 2,
+              backgroundColor: theme.card,
             },
           ]}
         >
@@ -94,12 +97,12 @@ export const StoryCircle: React.FC<StoryCircleProps> = ({
         </View>
       )}
       
-      <Text style={styles.name} numberOfLines={1}>{user.name}</Text>
+      <Text style={[styles.name, { color: theme.textPrimary }]} numberOfLines={1}>{user.name}</Text>
       {isCurrentUser && (
-        <Text style={styles.tapHint}>(tap to update)</Text>
+        <Text style={[styles.tapHint, { color: theme.textTertiary }]}>(tap to update)</Text>
       )}
       {!isCurrentUser && user.status_message && (
-        <Text style={styles.statusMessage} numberOfLines={1}>
+        <Text style={[styles.statusMessage, { color: theme.textTertiary }]} numberOfLines={1}>
           {user.status_message}
         </Text>
       )}
