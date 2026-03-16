@@ -8,7 +8,7 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
 - **Backend**: FastAPI + MongoDB (mock data)
 - **Animation**: react-native-reanimated, Animated API, expo-linear-gradient
 - **SVG**: react-native-svg
-- **State**: zustand
+- **State**: zustand, ThemeContext (React Context)
 
 ## Architecture
 ```
@@ -16,11 +16,14 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
   app/
     (onboarding)/ - welcome, demo, permissions, role
     (tabs)/ - index (home), map, circles, travel, profile
-    _layout.tsx - root layout
+    _layout.tsx - root layout (wraps ThemeProvider)
   src/
     components/
       circles/ - OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo
-      FeatureIcon, PrimaryButton, Toast, etc.
+      ThemeToggle.tsx - Sun/moon toggle button
+      FootprintCard.tsx, StoryCircle.tsx, etc.
+    context/
+      ThemeContext.tsx - LIGHT/DARK tokens, ThemeProvider, useTheme
     constants/theme.ts
     store/appStore.ts, onboardingStore.ts
     services/api.ts
@@ -28,43 +31,53 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
 
 ## What's Been Implemented
 
-### Onboarding (Complete)
-- Welcome screen, 3 animated demo slides, permissions screen
-- Back buttons, styled tap prompts, circle connection visual
+### Light/Dark Mode Toggle (Complete - Mar 2026)
+- **ThemeContext** with LIGHT and DARK color token objects
+- **ThemeProvider** wrapping entire app at root layout level
+- **ThemeToggle** component: 34px circle button with sun/moon emoji
+- Toggle visible in top-right header of ALL 5 screens
+- Light mode (cream #FDFAF7) is default on first install
+- Dark mode (#0A0806) activated via toggle
+- Preference persisted via AsyncStorage (`reassura_theme`)
+- StatusBar adapts to mode
+- Sub-components (FootprintCard, StoryCircle, BentoGrid) theme-aware
+- **Exceptions preserved**: I'm Home button (always green), boarding pass (always brown), flight path (always dark night sky)
+- Tab bar adapts background/icon colors to theme
 
-### Home Screen (tabs/index.tsx)
+### Circles Screen (Complete - Mar 2026)
+- BentoGrid for 2+ circles, 3D orbit view for single circle
+- Two-layer OrbitCanvas: visual 3D plane + flat touch overlay
+- WaveOverlay bottom sheet on node tap
+- Evening Horizon progress bar, I'm Home 3D button
+- isDark prop support
+
+### Onboarding (Complete)
+- Welcome screen, animated demo slides, permissions, circle connection
+
+### Home Screen (Complete)
 - I'm Home card, streak counter, circle member strip
-- Quick actions: Safe Walk (opens bottom sheet) + Check In (toast)
-- Safe Walk bottom sheet with mini map, circle watching, stop button
+- Quick actions: Safe Walk + Check In
 - Latest footprints feed
 
-### Map Screen (tabs/map.tsx)
-- Custom-drawn dark-themed map (colors matching mapbox dark-v11)
-- Avatar pins, search bar, filter pills, member strip
-- Road edge styling (#212a37)
+### Map Screen (Complete)
+- Custom dark-themed map, avatar pins, search, filter pills
 
-### Circles Screen (tabs/circles.tsx) - COMPLETE
-- **BentoGrid**: 2x2 grid for 2+ circles with mini orbit previews
-- **OrbitCanvas**: Full-screen planetary orbit view with continuously orbiting nodes
-  - **Two-layer architecture**: Visual 3D-transformed plane (rings + hub + visual nodes with `pointerEvents="none"`) overlaid by a flat touch layer for reliable node press handling
-- **Reassura SVG logomark hub**: Pin+heart SVG, Terra (#C4704A) background, pulse animation
-- **Status language**: Active/Steady/Quiet (replaced "safe" everywhere)
-- **Node design**: Emoji in 1.5px Sage (#7A9E87) bordered circles, active nodes pulse
-- **Off-grid nodes**: opacity 0.32, dashed border, 15px drift, Terra nudge dot
-- **Wave Overlay**: Blur backdrop bottom sheet with 3 tactile 3D buttons (Send a Wave, Call me soon, Custom), spring animation + haptics. Triggered by node tap - VERIFIED WORKING
-- **Evening Horizon**: Progress bar with gradient fill, sun indicator, member pips
-- **I'm Home 3D button**: 3D press effect with spring animation
-- **isDark prop**: All new components accept isDark (default true)
-- Sub-components: `/src/components/circles/` (4 files: OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo)
+### Travel Screen (Complete)
+- Boarding pass, night sky flight path, travel profile
 
-### Travel Screen (tabs/travel.tsx)
-- Page 1: Boarding pass design (active) / empty state with gradient icon
-- Page 2: Night sky flight path with LinearGradient, earth curve, city lights, polished avatar pin
-- Page 3: Travel profile with settings
+### Profile Screen (Complete)
+- Profile card, mood picker, settings
 
-### Create Circle Modal
-- 4-step flow: Name, Look (emoji+color), Invite members, Privacy
-- Celebration modal on creation
+## Design Tokens
+| Token | Light | Dark |
+|-------|-------|------|
+| background | #FDFAF7 | #0A0806 |
+| surface | #FFFFFF | rgba(255,255,255,0.04) |
+| textPrimary | #3D2E22 | rgba(247,243,238,0.92) |
+| textSecondary | #8C7B6E | rgba(247,243,238,0.38) |
+| sage | #7A9E87 | #7A9E87 |
+| terra | #C4704A | #C4704A |
+| navBg | #FFFFFF | rgba(10,8,6,0.96) |
 
 ## Backlog (Prioritized)
 - P1: Real authentication (JWT/OAuth)
@@ -73,12 +86,4 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
 - P2: GPS tracking, geofencing
 - P3: Circle invites flow, driving mode
 - P3: Shareable peace streak cards
-- P4: Light mode toggle (isDark wiring)
-- P4: Component refactoring (break large screens into smaller components)
-
-## Design Tokens
-- Sage: #7A9E87 (node borders, green accents)
-- Terra: #C4704A (hub, nudge dots, call buttons)
-- Dark bg: #0D0B09
-- Light bg: #F7F3EE
-- Brown tokens shared across both themes
+- P4: Component refactoring
