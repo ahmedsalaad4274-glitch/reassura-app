@@ -19,7 +19,7 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
     _layout.tsx - root layout
   src/
     components/
-      circles/ - OrbitCanvas, BentoGrid, WaveOverlay, OrbitNode, ReassuraLogo
+      circles/ - OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo
       FeatureIcon, PrimaryButton, Toast, etc.
     constants/theme.ts
     store/appStore.ts, onboardingStore.ts
@@ -43,16 +43,19 @@ Reassura is a private, invite-only peace-of-mind and family safety app. It's a h
 - Avatar pins, search bar, filter pills, member strip
 - Road edge styling (#212a37)
 
-### Circles Screen (tabs/circles.tsx) - **Latest Update**
+### Circles Screen (tabs/circles.tsx) - COMPLETE
 - **BentoGrid**: 2x2 grid for 2+ circles with mini orbit previews
 - **OrbitCanvas**: Full-screen planetary orbit view with continuously orbiting nodes
+  - **Two-layer architecture**: Visual 3D-transformed plane (rings + hub + visual nodes with `pointerEvents="none"`) overlaid by a flat touch layer for reliable node press handling
 - **Reassura SVG logomark hub**: Pin+heart SVG, Terra (#C4704A) background, pulse animation
 - **Status language**: Active/Steady/Quiet (replaced "safe" everywhere)
 - **Node design**: Emoji in 1.5px Sage (#7A9E87) bordered circles, active nodes pulse
 - **Off-grid nodes**: opacity 0.32, dashed border, 15px drift, Terra nudge dot
-- **Wave Overlay**: Blur backdrop bottom sheet with 3 tactile 3D buttons (Send a Wave, Call me soon, Custom), spring animation + haptics
+- **Wave Overlay**: Blur backdrop bottom sheet with 3 tactile 3D buttons (Send a Wave, Call me soon, Custom), spring animation + haptics. Triggered by node tap - VERIFIED WORKING
+- **Evening Horizon**: Progress bar with gradient fill, sun indicator, member pips
+- **I'm Home 3D button**: 3D press effect with spring animation
 - **isDark prop**: All new components accept isDark (default true)
-- Sub-components: `/src/components/circles/` (5 files)
+- Sub-components: `/src/components/circles/` (4 files: OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo)
 
 ### Travel Screen (tabs/travel.tsx)
 - Page 1: Boarding pass design (active) / empty state with gradient icon

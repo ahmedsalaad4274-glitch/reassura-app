@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, Dimensions, TouchableOpacity, Easing } from 'react-native';
 import { ReassuraLogo } from './ReassuraLogo';
 
 const TERRA = '#C4704A';
 const SAGE = '#7A9E87';
-const INK = '#0D0B09';
 
 const W = Dimensions.get('window').width;
 const RADII = [W * 0.17, W * 0.25, W * 0.32];
@@ -37,7 +36,7 @@ export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight
   const hubPulse = useRef(new Animated.Value(0.85)).current;
   // Node angles
   const angles = useRef(members.map((_, i) => new Animated.Value(i * (360 / members.length)))).current;
-  // Node positions
+  // Node positions — shared between visual layer and touch layer
   const posXs = useRef(members.map(() => new Animated.Value(0))).current;
   const posYs = useRef(members.map(() => new Animated.Value(0))).current;
   // Active pulse
@@ -117,7 +116,8 @@ export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight
 
   return (
     <View style={[s.arena, { height: arenaHeight }]}>
-      <View style={s.tiltedPlane}>
+      {/* ── Layer 1: Visual-only 3D plane (rings + hub + ghost nodes) ── */}
+      <View style={s.tiltedPlane} pointerEvents="none">
         {/* Dashed rings */}
         {RADII.map((r, i) => (
           <Animated.View key={i} style={[s.ring, {
@@ -136,11 +136,10 @@ export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight
           <ReassuraLogo size={38} />
         </Animated.View>
 
-        {/* Nodes */}
+        {/* Visual-only node ghosts (rendered in 3D space for perspective look) */}
         {members.map((m, i) => {
           const isOffGrid = m.status === 'offgrid';
           const isActive = m.status === 'active';
-
           return (
             <Animated.View key={m.id} style={[s.nodeWrap, {
               left: posXs[i],
@@ -151,15 +150,39 @@ export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight
                 { translateY: isOffGrid ? driftAnim as any : 0 },
               ],
             }]}>
-              <TouchableOpacity onPress={() => onNodePress(m)} activeOpacity={0.7}>
-                <View style={[s.node, isOffGrid && s.nodeOffGrid]}>
-                  <Text style={s.nodeEmoji}>{m.emoji}</Text>
-                </View>
-                <Text style={s.nodeName} numberOfLines={1}>{m.name}</Text>
-              </TouchableOpacity>
+              <View style={[s.node, isOffGrid && s.nodeOffGrid]}>
+                <Text style={s.nodeEmoji}>{m.emoji}</Text>
+              </View>
+              <Text style={s.nodeName} numberOfLines={1}>{m.name}</Text>
               {isOffGrid && (
                 <Animated.View style={[s.nudgeDot, { opacity: nudgePulse }]} />
               )}
+            </Animated.View>
+          );
+        })}
+      </View>
+
+      {/* ── Layer 2: Touch overlay (no transform, receives all touches) ── */}
+      <View style={s.touchLayer}>
+        {members.map((m, i) => {
+          const isOffGrid = m.status === 'offgrid';
+          const isActive = m.status === 'active';
+          return (
+            <Animated.View key={m.id} style={[s.touchNodeWrap, {
+              left: posXs[i],
+              top: posYs[i],
+              transform: [
+                { scale: isActive ? activePulse as any : 1 },
+                { translateY: isOffGrid ? driftAnim as any : 0 },
+              ],
+            }]}>
+              <TouchableOpacity
+                testID={`orbit-node-${m.id}`}
+                data-testid={`orbit-node-${m.id}`}
+                onPress={() => onNodePress(m)}
+                activeOpacity={0.7}
+                style={s.touchTarget}
+              />
             </Animated.View>
           );
         })}
@@ -169,10 +192,14 @@ export const OrbitCanvas: React.FC<Props> = ({ members, onNodePress, arenaHeight
 };
 
 const s = StyleSheet.create({
-  arena: { width: W, overflow: 'hidden' },
+  arena: { width: W, overflow: 'hidden', position: 'relative' },
   tiltedPlane: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     transform: [{ perspective: 600 }, { rotateX: '20deg' }],
+  },
+  touchLayer: {
+    ...StyleSheet.absoluteFillObject,
+    // No transform — flat plane sitting on top for reliable touches
   },
   ring: {
     position: 'absolute',
@@ -217,5 +244,15 @@ const s = StyleSheet.create({
     width: 8, height: 8, borderRadius: 4,
     backgroundColor: TERRA,
     shadowColor: TERRA, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.6, shadowRadius: 4,
+  },
+  touchNodeWrap: {
+    position: 'absolute',
+    width: NODE_SIZE + 12,
+    height: NODE_SIZE + 18,
+    zIndex: 20,
+  },
+  touchTarget: {
+    width: NODE_SIZE + 12,
+    height: NODE_SIZE + 18,
   },
 });
