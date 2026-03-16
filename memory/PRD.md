@@ -1,13 +1,13 @@
 # Reassura - Product Requirements Document
 
 ## Overview
-Reassura is a private, invite-only peace-of-mind and family safety app. High-fidelity React Native (Expo) prototype with interactive onboarding, tab-based navigation, animated UI, light/dark theme, and Safe Walk feature.
+Reassura is a private, invite-only peace-of-mind and family safety app. High-fidelity React Native (Expo) prototype with interactive onboarding, tab-based navigation, animated UI, light/dark theme, Safe Walk, and Circle Invites.
 
 ## Tech Stack
 - **Frontend**: React Native, Expo, Expo Router, TypeScript
 - **Animation**: react-native-reanimated, Animated API, expo-linear-gradient
 - **SVG**: react-native-svg
-- **State**: zustand, ThemeContext, SafeWalkContext
+- **State**: zustand, ThemeContext, SafeWalkContext, InviteContext
 
 ## Architecture
 ```
@@ -15,60 +15,46 @@ Reassura is a private, invite-only peace-of-mind and family safety app. High-fid
   app/
     (onboarding)/ - welcome, demo, permissions, role
     (tabs)/ - index (home), map, circles, travel, profile
-    _layout.tsx - ThemeProvider + SafeWalkProvider wrap
-    safe-walk-setup.tsx - Setup modal (3 fields)
+    _layout.tsx - ThemeProvider + SafeWalkProvider + InviteProvider
+    safe-walk-setup.tsx - Setup modal
     safe-walk-arrived.tsx - Celebration screen
-    safe-walk-overdue.tsx - Overdue alert (3 buttons)
+    safe-walk-overdue.tsx - Overdue alert
+    circle-invite.tsx - Invite form modal
   src/
     context/
-      ThemeContext.tsx - LIGHT/DARK tokens, useTheme
-      SafeWalkContext.tsx - Walk state, timer, overdue detection
+      ThemeContext.tsx - LIGHT/DARK tokens
+      SafeWalkContext.tsx - Walk state management
+      InviteContext.tsx - Pending invites state
     components/
-      ThemeToggle.tsx - Sun/moon toggle
-      circles/ - OrbitCanvas, BentoGrid, WaveOverlay, ReassuraLogo
-      FootprintCard.tsx, StoryCircle.tsx, etc.
-    constants/theme.ts
-    store/ - appStore, onboardingStore, authStore
+      ThemeToggle.tsx, circles/, FootprintCard, StoryCircle, etc.
 ```
 
 ## Implemented Features
 
+### Circle Invites (Complete - Mar 2026)
+- "+" button in Circles header opens invite form modal
+- Form: name input + optional contact + Send Invite button (disabled when empty)
+- Confirmation screen: "Invite sent!" with invitee name + Back to Circle button
+- PENDING INVITES section appears in circle view with dashed avatar, name, amber "Pending" badge
+- MOCKED: Invites stored in InviteContext React state, no backend
+
 ### Safe Walk (Complete - Mar 2026)
-- **Quick Actions Row**: 3 pill buttons on Home (Safe Walk, Check In, Night Check)
-- **Setup Modal**: Destination input, watcher chips (4 pre-selected), duration selector (5-30 min)
-- **Active Walk Banner**: Blue-themed banner on Home with timer, progress bar, "I've Arrived" button, location sharing notice
-- **Celebration Screen**: Sage gradient, bouncing house emoji, "You're home safe!", Done button
-- **Overdue Alert**: Amber-tinted screen with 3 response buttons (All good / Extend / Help)
-- **Profile History**: SAFE WALKS section with 3 MOCKED walk entries
-- **State**: SafeWalkContext manages isActive, timer, overdue (auto-triggers at duration + 5 min), auto-clear at 2 hours
-- No new tabs — accessed from Home only
+- 3-pill quick actions on Home (Safe Walk, Check In, Night Check)
+- Setup modal: destination, watchers, duration
+- Active walk banner with timer + progress + I've Arrived
+- Celebration + overdue alert screens
+- MOCKED: Location sharing simulated
 
 ### Light/Dark Mode (Complete - Mar 2026)
-- ThemeContext with LIGHT/DARK token objects, ThemeProvider wraps entire app
-- ThemeToggle (34px sun/moon emoji button) on all 5 screens
-- Light (#FDFAF7) default, dark (#0A0806) via toggle, persisted in AsyncStorage
-- Exceptions: I'm Home (always green), boarding pass (always brown), flight path (always dark)
+- ThemeContext, ThemeToggle on all screens, light default, AsyncStorage persistence
 
-### Circles Screen (Complete - Mar 2026)
-- BentoGrid + 3D OrbitCanvas with two-layer touch architecture
-- WaveOverlay, Evening Horizon, I'm Home 3D button
+### Circles Screen (Complete)
+- BentoGrid, 3D OrbitCanvas, WaveOverlay, Evening Horizon
 
-### Other Screens (Complete)
-- Onboarding (4-step flow), Home, Map, Travel, Profile, Create Circle modal
-
-## Design Tokens
-| Token | Light | Dark |
-|-------|-------|------|
-| background | #FDFAF7 | #0A0806 |
-| surface | #FFFFFF | rgba(255,255,255,0.04) |
-| textPrimary | #3D2E22 | rgba(247,243,238,0.92) |
-| sage | #7A9E87 | #7A9E87 |
-| terra | #C4704A | #C4704A |
-| blue (Safe Walk) | #4A6AAA | #4A6AAA |
+### Other: Onboarding, Home, Map, Travel, Profile
 
 ## Backlog
-- P1: Real authentication (JWT/OAuth)
-- P1: Live map integration (Mapbox)
-- P2: Push notifications, GPS tracking
-- P3: Circle invites, driving mode
-- P3: Shareable peace streak cards
+- P1: Real authentication
+- P1: Live map (Mapbox)
+- P2: Push notifications, GPS
+- P3: Driving mode, shareable streak cards
