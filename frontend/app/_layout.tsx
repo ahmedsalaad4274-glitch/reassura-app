@@ -20,6 +20,7 @@ import { useAuthStore } from '../src/store/authStore';
 import { useOnboardingStore } from '../src/store/onboardingStore';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
 import { SafeWalkProvider } from '../src/context/SafeWalkContext';
+import { InviteProvider } from '../src/context/InviteContext';
 
 function RootLayoutInner() {
   const { loadFromStorage } = useAuthStore();
@@ -81,6 +82,7 @@ function RootLayoutInner() {
         <Stack.Screen name="safe-walk-setup" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="safe-walk-arrived" options={{ presentation: 'modal', animation: 'fade' }} />
         <Stack.Screen name="safe-walk-overdue" options={{ presentation: 'modal', animation: 'fade' }} />
+        <Stack.Screen name="circle-invite" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
       </Stack>
     </GestureHandlerRootView>
   );
@@ -90,7 +92,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <SafeWalkProvider>
-        <RootLayoutInner />
+        <InviteProvider>
+          <RootLayoutInner />
+        </InviteProvider>
       </SafeWalkProvider>
     </ThemeProvider>
   );

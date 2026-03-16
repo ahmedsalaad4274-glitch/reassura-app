@@ -6,8 +6,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ThemeToggle } from '../../src/components/ThemeToggle';
+import { useInvites } from '../../src/context/InviteContext';
 import { OrbitCanvas, OrbitMember } from '../../src/components/circles/OrbitCanvas';
 import { BentoGrid } from '../../src/components/circles/BentoGrid';
 import { WaveOverlay } from '../../src/components/circles/WaveOverlay';
@@ -75,6 +77,8 @@ const ImHomeButton = () => {
 // ── Main Screen ──────────────────────────────────────────
 export default function CirclesScreen() {
   const { theme, isDark } = useTheme();
+  const router = useRouter();
+  const { getInvitesForCircle } = useInvites();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [waveTarget, setWaveTarget] = useState<OrbitMember | null>(null);
 
@@ -82,9 +86,14 @@ export default function CirclesScreen() {
   const selected = CIRCLES.find(c => c.id === selectedId);
   const current = CIRCLES.length === 1 ? CIRCLES[0] : selected;
   const showGrid = CIRCLES.length >= 2 && !selectedId;
+  const pendingInvites = current ? getInvitesForCircle(current.id) : [];
 
-  const handleWave = () => {
-    // Wave sent - in real app would notify circle
+  const handleWave = () => {};
+
+  const handleInvite = () => {
+    const cId = current?.id || '1';
+    const cName = current?.name || 'your circle';
+    router.push({ pathname: '/circle-invite', params: { circleId: cId, circleName: cName } });
   };
 
   return (
@@ -102,7 +111,7 @@ export default function CirclesScreen() {
             <Text style={[s.memberChipText, { color: theme.sage }]}>{totalMembers} members</Text>
           </View>
           <ThemeToggle />
-          <TouchableOpacity style={[s.addBtn, { backgroundColor: isDark ? 'rgba(122,158,135,0.1)' : 'rgba(74,122,90,0.08)' }]}>
+          <TouchableOpacity style={[s.addBtn, { backgroundColor: isDark ? 'rgba(122,158,135,0.1)' : 'rgba(74,122,90,0.08)' }]} onPress={handleInvite} testID="invite-circle-button">
             <Ionicons name="add" size={22} color={theme.sage} />
           </TouchableOpacity>
         </View>
@@ -123,6 +132,27 @@ export default function CirclesScreen() {
                 {current.members.length} members {'\u00B7'} {statusSummary(current.members as OrbitMember[])}
               </Text>
             </View>
+
+            {/* Pending Invites */}
+            {pendingInvites.length > 0 && (
+              <View style={[s.pendingSection, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+                <Text style={[s.pendingTitle, { color: theme.textSecondary }]}>PENDING INVITES</Text>
+                {pendingInvites.map(inv => (
+                  <View key={inv.id} style={[s.pendingRow, { borderBottomColor: theme.border }]}>
+                    <View style={[s.pendingAvatar, { borderColor: theme.amber }]}>
+                      <Text style={s.pendingAvatarText}>{'\u{1F4E8}'}</Text>
+                    </View>
+                    <View style={s.pendingInfo}>
+                      <Text style={[s.pendingName, { color: theme.textPrimary }]}>{inv.name}</Text>
+                      <Text style={[s.pendingSub, { color: theme.textTertiary }]}>Invite sent {'\u00B7'} pending</Text>
+                    </View>
+                    <View style={[s.pendingBadge, { backgroundColor: isDark ? 'rgba(201,168,76,0.12)' : 'rgba(201,168,76,0.1)' }]}>
+                      <Text style={[s.pendingBadgeText, { color: theme.amber }]}>Pending</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
 
             {/* 5. Evening Horizon */}
             <View style={[s.horizonSection, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -207,4 +237,16 @@ const s = StyleSheet.create({
 
   // Sub-label
   subLabel: { textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 10, marginBottom: 20 },
+
+  // Pending Invites
+  pendingSection: { marginHorizontal: 20, marginTop: 12, borderRadius: 14, borderWidth: 1, padding: 14 },
+  pendingTitle: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginBottom: 10 },
+  pendingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, gap: 10 },
+  pendingAvatar: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
+  pendingAvatarText: { fontSize: 16 },
+  pendingInfo: { flex: 1 },
+  pendingName: { fontFamily: 'DMSans_500Medium', fontSize: 14 },
+  pendingSub: { fontSize: 11, marginTop: 1 },
+  pendingBadge: { borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 },
+  pendingBadgeText: { fontSize: 10, fontWeight: '700' },
 });
