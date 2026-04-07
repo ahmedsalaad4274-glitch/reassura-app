@@ -493,7 +493,14 @@ async def update_user_profile(user_id: str, profile_data: dict):
 @api_router.get("/circles")
 async def get_circles():
     circles = await db.circles.find().to_list(100)
-    return [serialize_doc(c) for c in circles]
+    # Deduplicate by name — keep the first occurrence
+    seen = set()
+    unique = []
+    for c in circles:
+        if c.get("name") not in seen:
+            seen.add(c.get("name"))
+            unique.append(c)
+    return [serialize_doc(c) for c in unique]
 
 @api_router.get("/circles/{circle_id}")
 async def get_circle(circle_id: str):
