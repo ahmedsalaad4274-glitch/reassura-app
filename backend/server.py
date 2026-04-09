@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,8 +9,10 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from bson import ObjectId
+import bcrypt
+import jwt
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -18,6 +21,14 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# JWT config
+JWT_SECRET = os.environ['JWT_SECRET']
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRY_HOURS = 72
+
+# Security scheme
+security = HTTPBearer()
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -29,7 +40,39 @@ api_router = APIRouter(prefix="/api")
 def serialize_doc(doc):
     if doc:
         doc.pop("_id", None)
+        doc.pop("password_hash", None)
     return doc
+
+# ==================== AUTH HELPERS ====================
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password: str, hashed: str) -> bool:
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+def create_token(user_id: str, email: str) -> str:
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRY_HOURS),
+        "iat": datetime.utcnow(),
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user = await db.users.find_one({"id": payload["sub"]})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    return serialize_doc(user)
 
 # ==================== MODELS ====================
 
@@ -184,6 +227,17 @@ class CheckInRequest(BaseModel):
     to_user_id: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     responded: bool = False
+
+# ==================== AUTH MODELS ====================
+
+class RegisterRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 # ==================== SEED DATA ====================
 
@@ -416,14 +470,69 @@ async def seed_database():
 async def root():
     return {"message": "Reassura API - Peace of mind as a service 🌿"}
 
+# ==================== AUTH ENDPOINTS ====================
+
+@api_router.post("/auth/register")
+async def register(data: RegisterRequest):
+    existing = await db.users.find_one({"email": data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    user_id = str(uuid.uuid4())
+    user_doc = {
+        "id": user_id,
+        "name": data.name,
+        "email": data.email,
+        "password_hash": hash_password(data.password),
+        "emoji": "\U0001F9D1",
+        "circle_ids": [],
+        "status": "home",
+        "status_emoji": "\U0001F3E0",
+        "status_message": None,
+        "updated_at": datetime.utcnow(),
+        "home_city": "",
+        "battery_level": None,
+        "is_driving": False,
+        "driving_behavior": None,
+        "speed_mph": None,
+        "ghost_mode": False,
+        "is_current_user": False,
+        "mood": None,
+        "quiet_hours_enabled": False,
+        "quiet_hours_start": None,
+        "quiet_hours_end": None,
+    }
+    await db.users.insert_one(user_doc)
+    token = create_token(user_id, data.email)
+    user_doc.pop("_id", None)
+    user_doc.pop("password_hash", None)
+    return {"token": token, "user": user_doc}
+
+@api_router.post("/auth/login")
+async def login(data: LoginRequest):
+    user = await db.users.find_one({"email": data.email})
+    if not user or "password_hash" not in user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    if not verify_password(data.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    token = create_token(user["id"], data.email)
+    return {"token": token, "user": serialize_doc(user)}
+
+@api_router.get("/auth/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+    return current_user
+
+# ==================== PROTECTED ENDPOINTS ====================
+
 # Users
 @api_router.get("/users")
-async def get_users():
+async def get_users(current_user: dict = Depends(get_current_user)):
     users = await db.users.find().to_list(100)
     return [serialize_doc(u) for u in users]
 
 @api_router.get("/users/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, current_user: dict = Depends(get_current_user)):
     user = await db.users.find_one({"id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -437,7 +546,7 @@ async def get_current_user():
     return serialize_doc(user)
 
 @api_router.put("/users/{user_id}/status")
-async def update_user_status(user_id: str, status_update: UserStatusUpdate):
+async def update_user_status(user_id: str, status_update: UserStatusUpdate, current_user: dict = Depends(get_current_user)):
     user = await db.users.find_one({"id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -476,7 +585,7 @@ async def update_user_status(user_id: str, status_update: UserStatusUpdate):
     return serialize_doc(updated_user)
 
 @api_router.put("/users/{user_id}/profile")
-async def update_user_profile(user_id: str, profile_data: dict):
+async def update_user_profile(user_id: str, profile_data: dict, current_user: dict = Depends(get_current_user)):
     user = await db.users.find_one({"id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -491,7 +600,7 @@ async def update_user_profile(user_id: str, profile_data: dict):
 
 # Circles
 @api_router.get("/circles")
-async def get_circles():
+async def get_circles(current_user: dict = Depends(get_current_user)):
     circles = await db.circles.find().to_list(100)
     # Deduplicate by name — keep the first occurrence
     seen = set()
@@ -503,7 +612,7 @@ async def get_circles():
     return [serialize_doc(c) for c in unique]
 
 @api_router.get("/circles/{circle_id}")
-async def get_circle(circle_id: str):
+async def get_circle(circle_id: str, current_user: dict = Depends(get_current_user)):
     circle = await db.circles.find_one({"id": circle_id})
     if not circle:
         raise HTTPException(status_code=404, detail="Circle not found")
